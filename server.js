@@ -37,8 +37,8 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-if (process.env.DATABASE_URL){
-  connection = mysql.createConnection(process.env.DATABASE_URL);
+if (process.env.CLEARDB_DATABASE_URL){
+  connection = mysql.createConnection(process.env.CLEARDB_DATABASE_URL);
 }else{
   connection = mysql.createConnection({
     host: 'localhost',
