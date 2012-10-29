@@ -1,0 +1,20 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container
+      a.brand(href="/") Poli-talk
+      .nav-collapse
+        ul.nav
+          li.active
+            a(href="/") Home
+.container
+  .hero-unit
+    h1= member.first_name + ' ' + member.last_name
+    
+  - date = null
+  each speech in speeches
+    - if (date !== speech.hdate)
+      - date = speech.hdate.toDateString()
+      h3=date
+    h4=speech.talk + ' at ' + speech.htime.match(/..:../) + (speech.talk === 'speech' ? " (approximately " + speech.duration + " seconds)" : " (duration not counted)")
+    blockquote
+      | !{speech.body}

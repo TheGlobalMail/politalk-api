@@ -1,0 +1,38 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container
+      a.brand(href="/") Poli-talk
+      .nav-collapse
+        ul.nav
+          li
+            a(href="/") Home
+          li
+            a(href="/topics") Topics
+          li.active
+            a(href="/") Classifications
+
+.container
+  .hero-unit
+    h1 Classifications
+
+  form(action="/classify", method="POST")
+    //  p
+    //    input#category(name="category", type="text", placeholder="Add category…")
+    //    input#keywords.keywords(name="keywords", type="text", placeholder="Add keywords…")
+    button.btn(type="submit") Classify
+
+  table.table(style="margin-top: 30px")
+    tbody
+      tr
+        th Title
+        th Topic
+        th Date
+        th Speeches
+    tbody
+      each section in subsections
+        tr(class=(section.topic === 'Other' ? 'warning' : null))
+          td=section.body
+          td.topic=section.topic
+          td=section.hdate
+          td
+            a(href="/sections/#{section.epobject_id}/speeches") View speeches

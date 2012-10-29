@@ -1,0 +1,45 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container
+      a.brand(href="/") Poli-talk
+      .nav-collapse
+        ul.nav
+          li
+            a(href="/") Home
+          li.active
+            a(href="/people") People
+          li
+            a(href="/topics") Topics
+          li
+            a(href="/keywords") Keywords
+          li
+            a(href="/classifications") Classifications
+.container
+  .hero-unit
+    h1 Most Vocal People
+
+  table.table
+    thead
+      tr
+        th Rank
+        th Name
+        th Party
+        th Parliament
+        th Time (in minutes)
+        th Speeches
+        th Interjections
+        th Graph
+    tbody
+      each member, rank in members
+        tr
+          td= rank +1
+          td 
+            a(href='/members/#{member.member_id}')=member.first_name + ' ' + member.last_name
+          td= member.party
+          td= member.house === 1 ? 'House of Rep.' : 'Senate'
+          td= Math.round(member.duration * 100 / 60) / 100
+          td= member.total - member.interjections
+          td= member.interjections
+          td
+            span.sparkline
+              = member.durations

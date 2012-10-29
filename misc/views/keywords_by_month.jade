@@ -1,0 +1,30 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container
+      a.brand(href="/") Poli-talk
+      .nav-collapse
+        ul.nav
+          li
+            a(href="/") Home
+          li
+            a(href="/people") People
+          li
+            a(href="/topics") Topics
+          li.active
+            a(href="/keywords") Keywords
+          li
+            a(href="/classifications") Classifications
+.container
+  .hero-unit
+    h1 Keywords by Month
+
+  table.table
+    thead
+      tr
+        th Month
+        th Keywords
+    tbody
+      each keyword, rank in keywords
+        tr
+          td!=keyword.month.toDateString().replace(/^... |\d\d /g, '').replace(/ /g, '&nbsp;')
+          td=keyword.averages

@@ -1,0 +1,41 @@
+.navbar.navbar-fixed-top
+  .navbar-inner
+    .container
+      a.brand(href="/") Poli-talk
+      .nav-collapse
+        ul.nav
+          li
+            a(href="/") Home
+          li
+            a(href="/people") People
+          li.active
+            a(href="/topics") Topics
+          li
+            a(href="/keywords") Keywords
+          li
+            a(href="/classifications") Classifications
+.container
+  .hero-unit
+    h1 Topics
+
+  table.table
+    thead
+      tr
+        th Rank
+        th Name
+        th Time (in minutes)
+        th Speeches
+        th Interjections
+        th Graph
+    tbody
+      each topic, rank in topics
+        tr
+          td= rank +1
+          td
+            a(href='/topics/#{topic.id}', title=topic.keywords.split(',').join(', '))=topic.name
+          td= Math.round(topic.duration * 100 / 60) / 100
+          td= topic.total - topic.interjections
+          td= topic.interjections
+          td
+            span.sparkline
+              = topic.durations
