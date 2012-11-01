@@ -24,9 +24,6 @@ app.configure(function(){
   if (process.env.NODE_ENV === 'deliver'){
     app.use(express.basicAuth(authorize));
   }
-  if (['staging', 'production'].indexOf(process.env.NODE_ENV) < 0){
-    app.use(express.static(__dirname + '/' + web));
-  }
 });
 
 app.configure('development', function(){
