@@ -45,9 +45,36 @@ if (process.env.DATABASE_URL){
 }
 connection.connect();
 
+app.get('/api/members.csv', function(req, res, next){
+  var query = "select sum(duration) as duration, member.member_id, hdate, member.first_name, member.last_name, speaker_id, party, " +
+  "sum(if(talk='interjection', 1, 0)) as interjections, sum(if(talk='speech', 1, 0)) as speeches, member.house, count(*) as total from hansard" + 
+  " inner join member on member.member_id = speaker_id group by speaker_id, hdate order by hdate";
+  connection.query(query, function(err, members, fields) {
+    var csv = '', headers;
+    headers = ['Name', 'House', 'Party', 'Date', 'Duration', 'Speeches', 'Interjections'];
+    csv += headers.join(',') + "\n";
+    _.each(members, function(member){
+      var row = [
+        member.first_name + ' ' + member.last_name,
+        member.house === 1 ? 'House' : 'Senate',
+        member.party,
+        member.hdate,
+        member.duration,
+        member.speeches,
+        member.interjections
+      ];
+      csv += row.join(',') + "\n";
+    });
+
+    res.setHeader('Content-disposition', 'attachment; filename=members.csv'); 
+    res.setHeader('Content-type', 'text/csv'); 
+    res.send(csv);
+  });
+});
+
 app.get('/api/members', function(req, res, next){
   var query = "select sum(duration) as duration, member.member_id, member.first_name, member.last_name, speaker_id, party, " +
-  "sum(if(talk='interjection', 1, 0)) as interjections, member.house, count(*) as total from hansard" + 
+  "sum(if(talk='interjection', 1, 0)) as interjections, sum(if(talk='speech', 1, 0)) as speeches, member.house, count(*) as total from hansard" + 
   " inner join member on member.member_id = speaker_id group by speaker_id order by sum(duration) desc";
 
   if (cache.members){
@@ -62,6 +89,9 @@ app.get('/api/members', function(req, res, next){
         if (err) return next(err);
         member.id = member.member_id;
         member.rank = members.indexOf(member) + 1;
+        member.dates = _.map(durations, function(duration){
+          return duration.hdate;
+        }).join(',');
         member.durations = _.map(durations, function(duration){
           return Math.round(duration.duration * 100 / 60) / 100; 
         }).join(',');
