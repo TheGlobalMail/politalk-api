@@ -2,6 +2,7 @@ process.env.NODE_ENV = 'test';
 var Hansard = require('../lib/hansard');
 var fs = require('fs');
 var assert = require('assert');
+var helpers = require('./helpers');
 
 describe('Hansard.Parser', function(){
 
@@ -23,22 +24,27 @@ describe('Hansard.Parser', function(){
   describe(".parse called with xml data for a debate", function(){
 
     beforeEach(function(done){
-      var parser = new Hansard.Parser(date);
-      parser.on('end', done);
-      parser.on('error', done);
-      parser.write(xml);
-      parser.end();
+      helpers.clearHansard(function(){
+        var parser = new Hansard.Parser(date);
+        parser.on('end', done);
+        parser.on('error', done);
+        parser.write(xml);
+      });
     });
 
     it("should extract headings", function(done){
-      Hansard.byId('house/2012-10-30.1', function(err, section){
+      Hansard.byId('house-2012-10-30.3.1', function(err, section){
         assert(section, "No matching section found");
         assert(section.html.trim(), 'COMMITTEES');
-        assert(section.majorHeading);
+        assert(section.major);
         assert(section.date.toString(), (new Date('2012-10-30')).toString());
         assert(!section.time);
+        done();
       });
-      done();
+    });
+
+    afterEach(function(){
+      helpers.cleanup();
     });
   });
 

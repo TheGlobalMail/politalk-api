@@ -11,7 +11,8 @@
     "natural": "~0.1.17",
     "underscore.string": "~2.3.0",
     "express": "~3.0.0",
-    "cheerio": "~0.10.1"
+    "cheerio": "~0.10.1",
+    "pg": "git://github.com/brianc/node-postgres.git"
   },
   "devDependencies": {
     "mocha": "~1.6.0",
