@@ -34,11 +34,37 @@ describe('Hansard.Parser', function(){
 
     it("should extract headings", function(done){
       Hansard.byId('house-2012-10-30.3.1', function(err, section){
-        assert(section, "No matching section found");
-        assert(section.html.trim(), 'COMMITTEES');
+        assert(section, "No matching heading found");
+        assert.equal(section.html, 'COMMITTEES');
         assert(section.major);
-        assert(section.date.toString(), (new Date('2012-10-30')).toString());
-        assert(!section.time);
+        assert.equal(section.date.toString(), (new Date('2012-10-30')).toString());
+        done();
+      });
+    });
+
+    it("should extract sub headings", function(done){
+      Hansard.byId('house-2012-10-30.3.2', function(err, section){
+        assert(section, "No matching sub heading found");
+        assert.equal(section.html, 'Human Rights Committee; Membership');
+        assert(section.minor);
+        assert.equal(section.major_id, 'house-2012-10-30.3.1');
+        assert.equal(section.date.toString(), (new Date('2012-10-30')).toString());
+        done();
+      });
+    });
+
+    it("should extract sections", function(done){
+      Hansard.byId('house-2012-10-30.3.3', function(err, section){
+        assert(section, "No matching speech found");
+        assert(section.html.match(/a message from the Senate/));
+        assert(!section.major);
+        assert(!section.minor);
+        assert.equal(section.major_id, 'house-2012-10-30.3.1');
+        assert.equal(section.minor_id, 'house-2012-10-30.3.2');
+        assert.equal(section.date.toString(), (new Date('2012-10-30')).toString());
+        assert.equal(section.speaker_id, 68);
+        assert.equal(section.speaker, 'Ms Anna Elizabeth Burke');
+        assert.equal(section.time, '11:01');
         done();
       });
     });
