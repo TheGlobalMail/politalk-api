@@ -1,4 +1,4 @@
-var express = require('express')
+var express = require('express');
 var app = express();
 var web = process.argv[2] || 'dist';
 var async = require('async');

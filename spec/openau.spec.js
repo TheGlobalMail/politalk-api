@@ -5,7 +5,7 @@ var http = require('http');
 var sinon = require('sinon');
 var app = express();
 var port = 22250;
-var url = 'http://localhost:' + port + '/';
+var url = 'http://localhost:' + port;
 var suiteCount = 0;
 app.configure(function(){
   app.use(express.static(__dirname + '/fixtures'));

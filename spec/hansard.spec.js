@@ -21,6 +21,27 @@ describe('Hansard.Parser', function(){
 
   });
 
+  describe(".lastSpeechDate", function(){
+
+    var lastDate = new Date('2020-11-3')
+
+    beforeEach(function(done){
+      var speech = {
+        id: 'test', date: lastDate, 
+        html: '', headingId: 1, subHeadingId: 1, 
+        speaker_id: 1, speaker: 'test', timeOfDay: '11:00'
+      };
+      Hansard.addSpeech(speech, done);
+    });
+
+    it("should return the data of the last speech stored", function(done){
+      Hansard.lastSpeechDate(function(err, date){
+        assert(date.toString(), lastDate.toString());
+        done();
+      });
+    });
+  });
+
   describe(".parse called with xml data for a debate", function(){
 
     beforeEach(function(done){
@@ -64,7 +85,19 @@ describe('Hansard.Parser', function(){
         assert.equal(section.date.toString(), (new Date('2012-10-30')).toString());
         assert.equal(section.speaker_id, 68);
         assert.equal(section.speaker, 'Ms Anna Elizabeth Burke');
-        assert.equal(section.time, '11:01');
+        assert.equal(section.time_of_day, '11:01');
+        assert.equal(section.time, (new Date('2012-10-30 11:01')).toString());
+        assert.equal(section.words, 50);
+        done();
+      });
+    });
+
+    it("extract keywords", function(done){
+      Hansard.Phrases.bySpeechId('house-2012-10-30.3.3', function(err, keywords){
+        assert(keywords.length);
+        assert(keywords[0].text);
+        assert(keywords[0].frequency);
+        assert.equal(keywords[0].date.toString(), new Date('2012-10-30'));
         done();
       });
     });
