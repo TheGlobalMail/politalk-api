@@ -3,14 +3,11 @@ var app = express();
 var web = process.argv[2] || 'dist';
 var async = require('async');
 var _ = require('lodash');
-var mysql      = require('mysql');
+var db = require('./lib/db');
+var dateUtils = require('date-utils');
 
-function datish(date){
-  return [date.getFullYear(), date.getMonth() + 1, date.getDate()].join('-');
-};
-
-// Silly little cache to speed up development until I refine api
-var cache = {};
+var defaultTo = Date.today();
+var defaultFrom = Date.today().addMonths(-3);
 
 function authorize(username, password) {
   return 'tgm' === username && process.env.AUTHPASS === password;
@@ -38,98 +35,47 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-if (process.env.DATABASE_URL){
-  connection = mysql.createConnection(process.env.DATABASE_URL);
-}else{
-  connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    database: 'openaustralia'
-  });
-}
-connection.connect();
+function from(param){
+  var from = new Date(param)
+  return isNaN(from.valueOf()) ? defaultFrom : from;
+};
 
-app.get('/api/members.csv', function(req, res, next){
-  var stat = 'speeches';
-  var csv = '';
-  var query = "select hdate from hansard group by hdate order by hdate"; 
-  connection.query(query, function(err, dates, fields) {
-    var query = "select * from members order by member_id";
-
-    headers = ['Name', 'House', 'Party'];
-    headers = headers.concat(_.map(dates, function(date){ return date.hdate.toDateString(); } ));
-    csv += headers.join(',') + "\n";
-
-    var query = "select * from member where last_name in ('Abbott', 'Gillard', 'Hockey', 'Morrison', 'Pyne') order by member_id "; 
-    connection.query(query, function(err, members, fields) {
-
-      if (err) return next(err);
-
-
-      async.forEachSeries(members, function(member, memberDone){
-
-        csv += [
-          member.first_name + ' ' + member.last_name,
-          member.house === 1 ? 'House' : 'Senate',
-          member.party
-        ].join(",");
-
-        async.forEachSeries(dates, function(date, dateDone){
-          var query = "select sum(duration) as duration, hdate speaker_id, " +
-          "sum(if(talk='interjection', 1, 0)) as interjections, sum(if(talk='speech', 1, 0)) as speeches, count(*) as total from hansard "  + 
-          "where speaker_id = " + member.member_id + " and hdate = '" + datish(date.hdate) + "' group by speaker_id, hdate order by hdate";
-          connection.query(query, function(err, dataForMemberOnDate, fields) {
-            if (err) return next(err);
-            var datum = dataForMemberOnDate.length ? dataForMemberOnDate[0][stat] : 0;
-            if (err) return next(err);
-            csv += "," + datum; 
-            dateDone();
-          });
-        }, function(err){
-          if (err) return memberDone(err);
-          csv += "\n";
-          memberDone();
-        });
-
-      }, function(err){
-        if (err) return next(err);
-        res.setHeader('Content-disposition', 'attachment; filename=members.csv'); 
-        res.setHeader('Content-type', 'text/csv'); 
-        res.send(csv);
-      });
-
-    });
-  });
-});
+function to(param){
+  var to = new Date(param)
+  return isNaN(to.valueOf()) ? defaultTo : to;
+};
 
 app.get('/api/members', function(req, res, next){
-  var query = "select sum(duration) as duration, member.member_id, member.first_name, member.last_name, speaker_id, party, " +
-  "sum(if(talk='interjection', 1, 0)) as interjections, sum(if(talk='speech', 1, 0)) as speeches, member.house, count(*) as total from hansard" + 
-  " inner join member on member.member_id = speaker_id group by speaker_id order by sum(duration) desc";
+  var query = "select sum(duration) as duration, speaker, speaker_id, party, " +
+  "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
+  "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
+  "house, sum(words) as words, count(*) as total from hansards " + 
+  "inner join member on member.member_id = speaker_id " +
+  "where date between $1 and $2 " + 
+  "group by speaker_id,speaker,party,house " + 
+  "order by sum(duration) desc";
 
-  if (cache.members){
-    console.log('using cached members...');
-    return res.json(cache.members);
-  }
-
-  connection.query(query, function(err, members, fields) {
+  db.query(query, [from(req.query.from), to(req.query.to)], function(err, result) {
+    var members;
+    if (err) return next(err);
+    members = result.rows;
     async.forEach(members, function(member, next){ 
-      var q = 'select hansard.hdate, sum(if(speaker_id = ?, duration, 0)) as duration from hansard group by hansard.hdate;'
-      connection.query(q, member.member_id, function(err, durations, fields) {
+      //var q = 'select date, 0 as duration from hansards group by date;'
+      var q = 'select date, sum(case when (speaker_id=$1) then duration else 0 end) as duration from hansards group by date;'
+      db.query(q, [member.speaker_id], function(err, result) {
         if (err) return next(err);
-        member.id = member.member_id;
+        member.id = member.speaker_id;
         member.rank = members.indexOf(member) + 1;
-        member.dates = _.map(durations, function(duration){
-          return duration.hdate;
+        member.dates = _.map(result.rows, function(duration){
+          return duration.date;
         }).join(',');
-        member.durations = _.map(durations, function(duration){
+        member.durations = _.map(result.rows, function(duration){
           return Math.round(duration.duration * 100 / 60) / 100; 
         }).join(',');
         next(err);
       });
     }, function(err){
       if (err) return next(err);
-      cache.members = members;
       res.json(members);
     });
   });
@@ -137,22 +83,13 @@ app.get('/api/members', function(req, res, next){
 });
 
 app.get('/api/keywords', function(req, res, next){
-  var query = "select * from keywords order by extracted desc";
+  var query = "select text, sum(frequency) as frequency from phrases " + 
+  "where date between $1 and $2 " + 
+  "group by text order by frequency desc limit 50";
 
-  if (cache.keywords){
-    console.log('using cached keywords...');
-    return res.json(cache.keywords);
-  }
-
-  connection.query(query, function(err, keywords, fields) {
+  db.query(query, [from(req.query.from), to(req.query.to)], function(err, result) {
     if (err) return next(err);
-    _.forEach(keywords, function(keyword){
-      keyword.keywords = _.map(JSON.parse(keyword['results_natural_combo']), function(keyword){
-        return keyword.term + ' (' + keyword.tf + ')';
-      }).join(', ');
-    });
-    cache.keywords = keywords;
-    res.json(keywords);
+    res.json(result.rows);
   });
 });
 

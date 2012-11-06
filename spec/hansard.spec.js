@@ -88,6 +88,8 @@ describe('Hansard.Parser', function(){
         assert.equal(section.time_of_day, '11:01');
         assert.equal(section.time, (new Date('2012-10-30 11:01')).toString());
         assert.equal(section.words, 50);
+        assert.equal(section.duration, 200);
+        assert.equal(section.talktype, 'speech');
         done();
       });
     });

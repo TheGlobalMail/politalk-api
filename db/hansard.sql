@@ -11,6 +11,8 @@ CREATE TABLE hansards (
   speaker_id integer DEFAULT NULL,
   time timestamp DEFAULT NULL,
   time_of_day varchar(5) DEFAULT NULL,
+  duration integer DEFAULT 0,
+  talktype varchar(50) DEFAULT NULL,
   words integer DEFAULT NULL
 );
 CREATE INDEX date_idx ON hansards (date);
@@ -25,3 +27,4 @@ CREATE TABLE phrases (
 );
 CREATE INDEX hansard_idx ON phrases (hansard_id);
 CREATE INDEX datex ON phrases (date);
+create index text_idx on phrases (text);
