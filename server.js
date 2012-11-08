@@ -13,11 +13,13 @@ function authorize(username, password) {
   return 'tgm' === username && process.env.AUTHPASS === password;
 }
 
+var cache = {};
+
 var cors = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET');
   next();
-}
+};
 
 app.configure(function(){
   app.use(cors);
@@ -35,17 +37,24 @@ app.configure('production', function(){
   app.use(express.errorHandler());
 });
 
-function from(param){
-  var from = new Date(param)
-  return isNaN(from.valueOf()) ? defaultFrom : from;
-};
+function getFrom(param){
+  var fromParam = new Date(param);
+  return isNaN(fromParam.valueOf()) ? defaultFrom : fromParm;
+}
 
-function to(param){
-  var to = new Date(param)
-  return isNaN(to.valueOf()) ? defaultTo : to;
-};
+function getTo(param){
+  var toParam = new Date(param);
+  return isNaN(toParam.valueOf()) ? defaultTo : toParam;
+}
 
 app.get('/api/members', function(req, res, next){
+  var from = getFrom(req.query.from);
+  var to = getTo(req.query.to);
+  var cacheKey = 'members-' + from.toString() + '-' + toString();
+  var cached = cache[cacheKey];
+  if (cached){
+    return res.json(cached);
+  }
   var query = "select sum(duration) as duration, speaker, speaker_id, party, " +
   "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
   "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
@@ -55,13 +64,13 @@ app.get('/api/members', function(req, res, next){
   "group by speaker_id,speaker,party,house " + 
   "order by sum(duration) desc";
 
-  db.query(query, [from(req.query.from), to(req.query.to)], function(err, result) {
+  db.query(query, [from, to], function(err, result) {
     var members;
     if (err) return next(err);
     members = result.rows;
     async.forEach(members, function(member, next){ 
       //var q = 'select date, 0 as duration from hansards group by date;'
-      var q = 'select date, sum(case when (speaker_id=$1) then duration else 0 end) as duration from hansards group by date;'
+      var q = 'select date, sum(case when (speaker_id=$1) then duration else 0 end) as duration from hansards group by date';
       db.query(q, [member.speaker_id], function(err, result) {
         if (err) return next(err);
         member.id = member.speaker_id;
@@ -76,6 +85,7 @@ app.get('/api/members', function(req, res, next){
       });
     }, function(err){
       if (err) return next(err);
+      cache[cacheKey] = members;
       res.json(members);
     });
   });
