@@ -13,8 +13,6 @@ function authorize(username, password) {
   return 'tgm' === username && process.env.AUTHPASS === password;
 }
 
-var cache = {};
-
 var cors = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET');
@@ -50,11 +48,7 @@ function getTo(param){
 app.get('/api/members', function(req, res, next){
   var from = getFrom(req.query.from);
   var to = getTo(req.query.to);
-  var cacheKey = 'members-' + from.toString() + '-' + toString();
-  var cached = cache[cacheKey];
-  if (cached){
-    return res.json(cached);
-  }
+
   var query = "select sum(duration) as duration, speaker, speaker_id, party, " +
   "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
   "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
@@ -68,6 +62,16 @@ app.get('/api/members', function(req, res, next){
     var members;
     if (err) return next(err);
     members = result.rows;
+    _.each(members, function(member, index){
+      member.id = member.speaker_id;
+      member.rank = index + 1;
+      member.dates = [];
+      member.durations = [];
+    });
+    res.json(members);
+
+    // Disabled until it's optimised further
+    /*
     async.forEach(members, function(member, next){ 
       //var q = 'select date, 0 as duration from hansards group by date;'
       var q = 'select date, sum(case when (speaker_id=$1) then duration else 0 end) as duration from hansards group by date';
@@ -86,8 +90,8 @@ app.get('/api/members', function(req, res, next){
     }, function(err){
       if (err) return next(err);
       cache[cacheKey] = members;
-      res.json(members);
     });
+    */
   });
 
 });
