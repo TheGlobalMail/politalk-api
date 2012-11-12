@@ -49,13 +49,14 @@ app.get('/api/members', function(req, res, next){
   var from = getFrom(req.query.from);
   var to = getTo(req.query.to);
 
-  var query = "select sum(duration) as duration, speaker, speaker_id, party, " +
+  var query = "select sum(duration) as duration, speaker, first_name, " +
+  "last_name, speaker_id, party, " +
   "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
   "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
   "house, sum(words) as words, count(*) as total from hansards " + 
   "inner join member on member.member_id = speaker_id " +
   "where date between $1 and $2 " + 
-  "group by speaker_id,speaker,party,house " + 
+  "group by speaker_id,speaker,party,house,first_name,last_name " + 
   "order by sum(duration) desc";
 
   db.query(query, [from, to], function(err, result) {

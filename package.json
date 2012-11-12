@@ -15,7 +15,8 @@
     "pg": "git://github.com/brianc/node-postgres.git",
     "colors": "~0.6.0-1",
     "optimist": "~0.3.5",
-    "date-utils": "~1.2.12"
+    "date-utils": "~1.2.12",
+    "readable-stream": "0.0.3"
   },
   "devDependencies": {
     "mocha": "~1.6.0",

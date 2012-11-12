@@ -33,10 +33,10 @@ function grabFromOpenAustralia(date, cb){
     console.info('Looking at ' + debateOn);
     var parser = new Hansard.Parser(debateOn);
     parser.on('error', cb);
-    parser.write(xml);
     parser.on('end', function(){
       console.info('completed: ' + debateOn);
     });
+    parser.write(xml);
   });
   openau.on('error', cb);
   openau.on('end', cb);
