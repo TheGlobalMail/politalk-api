@@ -1,8 +1,8 @@
 var colors = require('colors');
-var dateUtils = require('date-utils');
-
-var OpenAu = require('./lib/openau').OpenAu;
+var OpenAu = require('./lib/openau-checker');
+var downloader = require('./lib/xml-downloader');
 var Hansard = require('./lib/hansard');
+require('date-utils');
 
 var argv = require('optimist')
   .usage('Usage: $0 -u [url] -d [date]')
@@ -13,42 +13,27 @@ var argv = require('optimist')
   .describe('d', 'Date to get hansard scripts after. In format 2012-12-01')
   .argv;
 
-function startImport(){
+function workOutDateToRequest(cb){
   if (argv.date){
-    grabFromOpenAustralia((new Date(argv.date)).addDays(-1), complete);
+    cb(null, (new Date(argv.date)).addDays(-1));
   }else{
     Hansard.lastSpeechDate(function(err, date){
-      if (!date) complete('No recent date in database. Run with -d instead');
-      grabFromOpenAustralia(date, complete);
+      if (!date) cb('No recent date in database. Run with -d instead');
+      cb(null, date);
     });
   }
-};
+}
 
-function grabFromOpenAustralia(date, cb){
-  var openau;
-  console.info('Last download date: ' + date);
-  console.info('URL: ' + argv.url);
-  openau = new OpenAu(argv.url, date);
-  openau.on('data', function(xml, debateOn){
-    console.info('Looking at ' + debateOn);
-    var parser = new Hansard.Parser(debateOn);
-    parser.on('error', cb);
-    parser.on('end', function(){
-      console.info('completed: ' + debateOn);
+workOutDateToRequest(function(err, date){
+  if (err) return console.error(err.red);
+  var openau = new OpenAu(argv.url, date);
+  var parser = new Hansard.Parser();
+
+  openau
+    .pipe(downloader)
+    .pipe(parser)
+    .on('end', function(){
+      console.error('ok'.green);
     });
-    parser.write(xml);
-  });
-  openau.on('error', cb);
-  openau.on('end', cb);
-};
+});
 
-function complete(err){
-  if (err){
-    throw(err);
-    process.exit(1);
-  }else{
-    console.error('ok'.green);
-  }
-};
-
-startImport();

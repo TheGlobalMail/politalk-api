@@ -3,8 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "less": ">= 0.0.1",
-    "jade": ">= 0.0.1",
     "lodash": "~0.8.2",
     "async": "~0.1.22",
     "request": "~2.11.4",
@@ -16,7 +14,8 @@
     "colors": "~0.6.0-1",
     "optimist": "~0.3.5",
     "date-utils": "~1.2.12",
-    "readable-stream": "0.0.3"
+    "map-stream": "0.0.1",
+    "readable-stream": "git://github.com/isaacs/readable-stream.git"
   },
   "devDependencies": {
     "mocha": "~1.6.0",

@@ -15,7 +15,7 @@ describe('Hansard.Parser', function(){
       var parser = new Hansard.Parser(date);
       var id = parser.convertId('uk.org.publicwhip/debate/2012-10-30.4.3');
       assert.equal(id, 'house-2012-10-30.4.3');
-      var id = parser.convertId('uk.org.publicwhip/lords/2012-01-01.4.3');
+      id = parser.convertId('uk.org.publicwhip/lords/2012-01-01.4.3');
       assert.equal(id, 'senate-2012-01-01.4.3');
     });
 
@@ -23,7 +23,7 @@ describe('Hansard.Parser', function(){
 
   describe(".lastSpeechDate", function(){
 
-    var lastDate = new Date('2020-11-3')
+    var lastDate = new Date('2020-11-3');
 
     beforeEach(function(done){
       var speech = {
@@ -46,10 +46,11 @@ describe('Hansard.Parser', function(){
 
     beforeEach(function(done){
       helpers.clearHansard(function(){
-        var parser = new Hansard.Parser(date);
+        var parser = new Hansard.Parser();
         parser.on('end', done);
         parser.on('error', done);
-        parser.write(xml);
+        parser.write({date: date, xml: xml});
+        parser.end();
       });
     });
 
