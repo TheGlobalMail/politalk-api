@@ -37,7 +37,7 @@ app.configure('production', function(){
 
 function getFrom(param){
   var fromParam = new Date(param);
-  return isNaN(fromParam.valueOf()) ? defaultFrom : fromParm;
+  return isNaN(fromParam.valueOf()) ? defaultFrom : fromParam;
 }
 
 function getTo(param){
@@ -70,29 +70,6 @@ app.get('/api/members', function(req, res, next){
       member.durations = [];
     });
     res.json(members);
-
-    // Disabled until it's optimised further
-    /*
-    async.forEach(members, function(member, next){ 
-      //var q = 'select date, 0 as duration from hansards group by date;'
-      var q = 'select date, sum(case when (speaker_id=$1) then duration else 0 end) as duration from hansards group by date';
-      db.query(q, [member.speaker_id], function(err, result) {
-        if (err) return next(err);
-        member.id = member.speaker_id;
-        member.rank = members.indexOf(member) + 1;
-        member.dates = _.map(result.rows, function(duration){
-          return duration.date;
-        }).join(',');
-        member.durations = _.map(result.rows, function(duration){
-          return Math.round(duration.duration * 100 / 60) / 100; 
-        }).join(',');
-        next(err);
-      });
-    }, function(err){
-      if (err) return next(err);
-      cache[cacheKey] = members;
-    });
-    */
   });
 
 });
@@ -102,7 +79,7 @@ app.get('/api/keywords', function(req, res, next){
   "where date between $1 and $2 " + 
   "group by text order by frequency desc limit 50";
 
-  db.query(query, [from(req.query.from), to(req.query.to)], function(err, result) {
+  db.query(query, [getFrom(req.query.from), getTo(req.query.to)], function(err, result) {
     if (err) return next(err);
     res.json(result.rows);
   });
