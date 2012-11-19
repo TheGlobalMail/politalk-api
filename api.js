@@ -85,4 +85,16 @@ app.get('/api/keywords', function(req, res, next){
   });
 });
 
-app.listen(process.env.PORT || 8080);
+app.get('/api/dates', function(req, res, next){
+  var query = "select date from hansards group by date order by date";
+
+  db.query(query, function(err, result) {
+    if (err) return next(err);
+    res.json(_.pluck(result.rows, 'date'));
+  });
+});
+
+module.exports.port = process.env.PORT || 8080;
+
+module.exports.server = app.listen(module.exports.port);
+

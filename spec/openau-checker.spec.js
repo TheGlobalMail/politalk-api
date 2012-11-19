@@ -9,6 +9,7 @@ var url = 'http://localhost:' + port;
 app.configure(function(){
   app.use(express.static(__dirname + '/fixtures'));
 });
+process.env.NODE_ENV = 'test';
 
 describe("OpenAuChecker", function(){
 
