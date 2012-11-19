@@ -33,6 +33,7 @@ workOutDateToRequest(function(err, date){
     .pipe(downloader)
     .pipe(parser)
     .on('end', function(){
+      Hansard.end();
       console.error('ok'.green);
     });
 });
