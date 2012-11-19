@@ -8,5 +8,7 @@ The api supports CORS. We might add JSONp at some point.
 
 ## Todo
 
+* get old data
 * integration tests
+* pull down members
 * do olap for sparklines 
