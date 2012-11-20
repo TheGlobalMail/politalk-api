@@ -78,6 +78,18 @@ app.get('/api/members', function(req, res, next){
 
 });
 
+app.get('/api/keywords/data', function(req, res, next){
+  var query = "select text, phrases.date, frequency, speaker, house, party from phrases " + 
+    "inner join hansards on hansards.id = phrases.hansard_id " + 
+    "inner join member on member.member_id = hansards.speaker_id " +
+    "where phrases.date between $1 and $2 ";
+
+  db.query(query, [getFrom(req.query.from), getTo(req.query.to)], function(err, result) {
+    if (err) return next(err);
+    res.json(result.rows);
+  });
+});
+
 app.get('/api/keywords', function(req, res, next){
   var query = "select text, sum(frequency) as frequency from phrases " + 
   "where date between $1 and $2 " + 
