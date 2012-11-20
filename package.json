@@ -19,7 +19,8 @@
     "event-stream": "~3.0.7",
     "JSONStream": "~0.4.2",
     "rimraf": "~2.0.2",
-    "moment": "~1.7.2"
+    "moment": "~1.7.2",
+    "nodetime": "~0.6.3"
   },
   "devDependencies": {
     "mocha": "~1.6.0",
