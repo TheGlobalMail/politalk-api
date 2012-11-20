@@ -1,3 +1,7 @@
+require('nodetime').profile({
+  accountKey: '1be0980981686c275b5a4c91ab8966df55d1d68d', 
+  appName: 'politalk-api'
+});
 var colors = require('colors');
 var OpenAu = require('./lib/openau-checker');
 var downloader = require('./lib/xml-downloader');
