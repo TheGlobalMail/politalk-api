@@ -21,7 +21,7 @@ var argv = require('optimist')
 
 function workOutDateToRequest(cb){
   if (argv.from){
-    cb(null, (new Date(argv.from)).addDays(-1));
+    cb(null, new Date(argv.from));
   }else{
     Hansard.lastSpeechDate(function(err, date){
       if (!date) cb('No recent date in database. Run with -d instead');
@@ -33,7 +33,7 @@ function workOutDateToRequest(cb){
 workOutDateToRequest(function(err, date){
   if (err) return console.error(err.red);
 
-  var openau = new OpenAu(argv.url, date, argv.to);
+  var openau = new OpenAu(argv.url, date, argv.to && new Date(argv.to));
   var parser = new Hansard.Parser();
 
   openau

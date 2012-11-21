@@ -129,4 +129,6 @@ app.get('/api/dates', function(req, res, next){
 module.exports.port = process.env.PORT || 8080;
 
 module.exports.server = app.listen(module.exports.port);
-
+module.exports.server.on('close', function(){
+  db.end();
+});
