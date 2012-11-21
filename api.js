@@ -25,6 +25,7 @@ var cors = function(req, res, next) {
 
 app.configure(function(){
   app.use(cors);
+  app.use(express.compress());
   app.use(app.router);
   if (process.env.NODE_ENV === 'deliver'){
     app.use(express.basicAuth(authorize));
@@ -79,10 +80,11 @@ app.get('/api/members', function(req, res, next){
 });
 
 app.get('/api/keywords/data', function(req, res, next){
-  var query = "select text, phrases.date, frequency, speaker, house, party from phrases " + 
+  var query = "select text, phrases.date, sum(frequency) as frequency, speaker, house, party from phrases " + 
     "inner join hansards on hansards.id = phrases.hansard_id " + 
     "inner join member on member.member_id = hansards.speaker_id " +
-    "where phrases.date between $1 and $2 ";
+    "where phrases.date between $1 and $2 " +
+    "group by text, speaker, phrases.date, house, party";
 
   db.query(query, [getFrom(req.query.from), getTo(req.query.to)], function(err, result) {
     if (err) return next(err);
@@ -91,11 +93,25 @@ app.get('/api/keywords/data', function(req, res, next){
 });
 
 app.get('/api/keywords', function(req, res, next){
-  var query = "select text, sum(frequency) as frequency from phrases " + 
-  "where date between $1 and $2 " + 
-  "group by text order by frequency desc limit 50";
+  var query = "select text, sum(frequency) as frequency " +
+    "from phrases " + 
+    "inner join hansards on hansards.id = phrases.hansard_id " + 
+    "inner join member on member.member_id = hansards.speaker_id " +
+    "where phrases.date between $1 and $2 ";
+  var params = [getFrom(req.query.from), getTo(req.query.to)];
 
-  db.query(query, [getFrom(req.query.from), getTo(req.query.to)], function(err, result) {
+  ['house', 'party', 'speaker_id'].forEach(function(q){
+    if (req.query[q]){
+      params.push(req.query[q]);
+      query += ' and ' + q + ' = $' + params.length + ' ';
+    }
+  });
+
+  query += "group by text " +
+    "order by frequency desc " +
+    "limit 40";
+
+  db.query(query, params, function(err, result) {
     if (err) return next(err);
     res.json(result.rows);
   });
