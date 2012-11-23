@@ -7,7 +7,7 @@ var fs = require('fs');
 describe("members-loader", function(){
 
   beforeEach(function(done){
-    var query = fs.readFileSync(__dirname + '/../db/member.sql').toString();
+    var query = fs.readFileSync(__dirname + '/fixtures/member.sql').toString();
     var member = {
       "member_id":"628","house":"1","first_name":"Harry","last_name":"Jenkins",
       "constituency":"Scullin","party":"Australian Labor Party",

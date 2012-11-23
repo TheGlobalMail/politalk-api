@@ -44,6 +44,9 @@ describe('Hansard.Parser', function(){
 
   describe(".parse called with xml data for a debate", function(){
 
+    // XXX hardcoded test count. Increment this if you add a test! hack to simulate afterAll
+    var specs = 4;
+
     beforeEach(function(done){
       helpers.clearHansard(function(){
         var parser = new Hansard.Parser();
@@ -106,7 +109,8 @@ describe('Hansard.Parser', function(){
     });
 
     afterEach(function(){
-      helpers.cleanup();
+      specs--;
+      if (!specs) helpers.cleanup();
     });
   });
 

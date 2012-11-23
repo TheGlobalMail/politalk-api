@@ -5,13 +5,15 @@ var Hansard = require('./lib/hansard');
 var async = require('async');
 var MembersStream = require('./lib/members').MembersStream;
 var membersLoader = require('./lib/members-loader');
+var keywordSummaries = require('./lib/keyword-summaries');
 require('date-utils');
 
 var argv = require('optimist')
   .usage('Usage: $0 -u [url] -f [from] -t [to]')
-  .demand(['u'])
   .alias('u', 'url')
   .describe('u', 'URL to download OpenAustralia xml files from')
+  .alias('k', 'key')
+  .describe('k', 'OpenAustralia API key')
   .alias('f', 'from')
   .describe('f', 'Date to get hansard scripts after. In format 2012-12-01')
   .alias('t', 'to')
@@ -24,31 +26,36 @@ function workOutDateToRequest(cb){
   }else{
     Hansard.lastSpeechDate(function(err, date){
       if (!date) cb('No recent date in database. Run with -d instead');
-      console.error('Using: ' + date);
+      date.addDays(1);
       cb(null, date);
     });
   }
 }
 
-workOutDateToRequest(function(err, date){
-  if (err) return console.error(err.red);
+workOutDateToRequest(function(err, from){
+  if (err) return console.error(err);
 
-  var checker = new Checker(argv.url, date, argv.to && new Date(argv.to));
+  var url = argv.url || 'http://data.openaustralia.org/scrapedxml';
+  var to = argv.to && new Date(argv.to);
+  var checker = new Checker(url, from, to);
   var parser = new Hansard.Parser();
-  var members = new MembersStream({ apikey: process.env.OPENAU_KEY });
+  var apikey = argv.key || process.env.OPENAU_KEY;
 
   async.parallel([
 
     function(cb){
-      // Steam member data into database
+      // Stream member data into database
+      var members = new MembersStream({ apikey: apikey });
       members.pipe(membersLoader).on('end', cb);
     },
 
     function(cb){
-      // Steam handard data into database
+      // Stream handard data into database and regenerate keyword summary 
+      // tables if need be
       checker
         .pipe(downloader)
         .pipe(parser)
+        .pipe(keywordSummaries)
         .on('end', cb);
     }
 
