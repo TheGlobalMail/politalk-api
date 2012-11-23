@@ -46,5 +46,7 @@ checker
   .pipe(verify)
   .pipe(cachedClear)
   .pipe(reporter)
-  .on('end', function(){ db.end(); })
-  .on('error', function(err){ console.error(err); });
+  .on('end', function(){
+    db.end();  
+    console.error('ok');
+  });

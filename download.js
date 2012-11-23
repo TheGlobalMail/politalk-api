@@ -1,8 +1,8 @@
 var metrics = require('./lib/metrics');
-var colors = require('colors');
 var Checker = require('./lib/openau-checker');
 var downloader = require('./lib/xml-downloader');
 var Hansard = require('./lib/hansard');
+var async = require('async');
 var MembersStream = require('./lib/members').MembersStream;
 var membersLoader = require('./lib/members-loader');
 require('date-utils');
@@ -24,6 +24,7 @@ function workOutDateToRequest(cb){
   }else{
     Hansard.lastSpeechDate(function(err, date){
       if (!date) cb('No recent date in database. Run with -d instead');
+      console.error('Using: ' + date);
       cb(null, date);
     });
   }
@@ -34,29 +35,26 @@ workOutDateToRequest(function(err, date){
 
   var checker = new Checker(argv.url, date, argv.to && new Date(argv.to));
   var parser = new Hansard.Parser();
-  var members = new MembersStream({ url: argv.url, apikey: process.env.OPENAU_KEY });
+  var members = new MembersStream({ apikey: process.env.OPENAU_KEY });
 
   async.parallel([
 
     function(cb){
       // Steam member data into database
       members.pipe(membersLoader).on('end', cb);
-    }
+    },
 
-    /*
     function(cb){
       // Steam handard data into database
       checker
         .pipe(downloader)
         .pipe(parser)
-        .on('end', function(){
-          console.error('ok'.green);
-        });
-    }*/
+        .on('end', cb);
+    }
 
   ], function(err){
     Hansard.end();
-    console.error('ok'.green);
+    console.error('ok');
   });
 });
 
