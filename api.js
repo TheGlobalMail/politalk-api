@@ -81,27 +81,14 @@ app.get('/api/members', function(req, res, next){
 
 });
 
-app.get('/api/keywords/data', function(req, res, next){
-  var query = "select text, phrases.date, sum(frequency) as frequency, speaker, house, party from phrases " + 
-    "inner join hansards on hansards.id = phrases.hansard_id " + 
-    "inner join member on member.member_id = hansards.speaker_id " +
-    "where phrases.date between $1 and $2 " +
-    "group by text, speaker, phrases.date, house, party";
-
-  db.query(query, [getFrom(req.query.from), getTo(req.query.to)], function(err, result) {
-    if (err) return next(err);
-    res.json(result.rows);
-  });
-});
-
-app.get('/api/keywords/month', function(req, res, next){
+app.get('/api/keywords', function(req, res, next){
   var query;
   var params = [getFrom(req.query.from), getTo(req.query.to)];
  
   if (req.query.house || req.query.party){
     query = "select text, sum(frequency) as frequency " +
-      "from phrases_houses_months " + 
-      "where month between $1 and $2 ";
+      "from phrases_houses_summaries " + 
+      "where date between $1 and $2 ";
     if (req.query.house){
       params.push(req.query.house);
       query += 'and house = $' + params.length + ' ';
@@ -112,14 +99,14 @@ app.get('/api/keywords/month', function(req, res, next){
     }
   }else if (req.query.speaker_id){
     query = "select text, sum(frequency) as frequency " +
-      "from phrases_speaker_ids_months " + 
-      "where month between $1 and $2 ";
+      "from phrases_speaker_ids_summaries " + 
+      "where date between $1 and $2 ";
     params.push(req.query.speaker_id);
     query += 'and speaker_id = $' + params.length + ' ';
   }else{
     query = "select text, sum(frequency) as frequency " +
-      "from phrases_months " + 
-      "where month between $1 and $2 ";
+      "from phrases_summaries " + 
+      "where date between $1 and $2 ";
   }
 
   query += "group by text " +
