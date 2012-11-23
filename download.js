@@ -1,11 +1,10 @@
-require('nodetime').profile({
-  accountKey: '1be0980981686c275b5a4c91ab8966df55d1d68d', 
-  appName: 'politalk-api'
-});
+var metrics = require('./lib/metrics');
 var colors = require('colors');
-var OpenAu = require('./lib/openau-checker');
+var Checker = require('./lib/openau-checker');
 var downloader = require('./lib/xml-downloader');
 var Hansard = require('./lib/hansard');
+var MembersStream = require('./lib/members').MembersStream;
+var membersLoader = require('./lib/members-loader');
 require('date-utils');
 
 var argv = require('optimist')
@@ -33,15 +32,31 @@ function workOutDateToRequest(cb){
 workOutDateToRequest(function(err, date){
   if (err) return console.error(err.red);
 
-  var openau = new OpenAu(argv.url, date, argv.to && new Date(argv.to));
+  var checker = new Checker(argv.url, date, argv.to && new Date(argv.to));
   var parser = new Hansard.Parser();
+  var members = new MembersStream({ url: argv.url, apikey: process.env.OPENAU_KEY });
 
-  openau
-    .pipe(downloader)
-    .pipe(parser)
-    .on('end', function(){
-      Hansard.end();
-      console.error('ok'.green);
-    });
+  async.parallel([
+
+    function(cb){
+      // Steam member data into database
+      members.pipe(membersLoader).on('end', cb);
+    }
+
+    /*
+    function(cb){
+      // Steam handard data into database
+      checker
+        .pipe(downloader)
+        .pipe(parser)
+        .on('end', function(){
+          console.error('ok'.green);
+        });
+    }*/
+
+  ], function(err){
+    Hansard.end();
+    console.error('ok'.green);
+  });
 });
 

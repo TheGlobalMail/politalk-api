@@ -1,9 +1,4 @@
-if (process.env.NODE_ENV !== 'test'){
-  require('nodetime').profile({
-    accountKey: '1be0980981686c275b5a4c91ab8966df55d1d68d', 
-    appName: 'politalk-api'
-  });
-}
+var metrics = require('./lib/metrics');
 var express = require('express');
 var app = express();
 var web = process.argv[2] || 'dist';
