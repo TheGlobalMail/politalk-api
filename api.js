@@ -94,20 +94,33 @@ app.get('/api/keywords/data', function(req, res, next){
   });
 });
 
-app.get('/api/keywords', function(req, res, next){
-  var query = "select text, sum(frequency) as frequency " +
-    "from phrases " + 
-    "inner join hansards on hansards.id = phrases.hansard_id " + 
-    "inner join member on member.member_id = hansards.speaker_id " +
-    "where phrases.date between $1 and $2 ";
+app.get('/api/keywords/month', function(req, res, next){
+  var query;
   var params = [getFrom(req.query.from), getTo(req.query.to)];
-
-  ['house', 'party', 'speaker_id'].forEach(function(q){
-    if (req.query[q]){
-      params.push(req.query[q]);
-      query += ' and ' + q + ' = $' + params.length + ' ';
+ 
+  if (req.query.house || req.query.party){
+    query = "select text, sum(frequency) as frequency " +
+      "from phrases_houses_months " + 
+      "where month between $1 and $2 ";
+    if (req.query.house){
+      params.push(req.query.house);
+      query += 'and house = $' + params.length + ' ';
     }
-  });
+    if (req.query.party){
+      params.push(req.query.party);
+      query += 'and party = $' + params.length + ' ';
+    }
+  }else if (req.query.speaker_id){
+    query = "select text, sum(frequency) as frequency " +
+      "from phrases_speaker_ids_months " + 
+      "where month between $1 and $2 ";
+    params.push(req.query.speaker_id);
+    query += 'and speaker_id = $' + params.length + ' ';
+  }else{
+    query = "select text, sum(frequency) as frequency " +
+      "from phrases_months " + 
+      "where month between $1 and $2 ";
+  }
 
   query += "group by text " +
     "order by frequency desc " +
