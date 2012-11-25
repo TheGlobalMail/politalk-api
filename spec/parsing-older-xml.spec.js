@@ -14,11 +14,13 @@ describe('Hansard.Parser', function(){
 
     beforeEach(function(done){
       helpers.clearHansard(function(){
-        var parser = new Hansard.Parser();
-        parser.on('end', done);
-        parser.on('error', done);
-        parser.write({date: date, xml: xml});
-        parser.end();
+        helpers.loadAllMembers(function(){
+          var parser = new Hansard.Parser();
+          parser.on('end', done);
+          parser.on('error', done);
+          parser.write({date: date, xml: xml});
+          parser.end();
+        });
       });
     });
 
@@ -62,13 +64,31 @@ describe('Hansard.Parser', function(){
     });
 
     it("should use adjournments at the end of speeches to calculate the duration of a speech", function(done){
-      Hansard.byId('house-2006-02-07.71.3', function(err, speech){
+      Hansard.byId('house-2006-02-07.13.8', function(err, speech){
         assert(speech, "No matching speech found");
-        assert.equal(speech.duration, 2);
+        assert.equal(speech.duration, Math.round(speech.words / 120));
         assert.equal(speech.talktype, 'speech');
         done();
       });
     });
+    
+    it("should fallback to a wordcount estimate if the time is out by more than 10 minutes", function(done){
+      Hansard.byId('house-2006-02-07.71.3', function(err, speech){
+        assert(speech, "No matching speech found");
+        assert.equal(speech.duration, 120);
+        assert.equal(speech.talktype, 'speech');
+        done();
+      });
+    });
+    
+    it("should set the speaker_id to be the member_id if it's over 100000", function(done){
+      Hansard.byId('house-2006-02-07.13.8', function(err, speech){
+        assert(speech, "No matching speech found");
+        assert.equal(speech.speaker_id, 265);
+        done();
+      });
+    });
+
 
     afterEach(function(){
       helpers.cleanup();
