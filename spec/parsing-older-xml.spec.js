@@ -38,7 +38,8 @@ describe('Hansard.Parser', function(){
         assert.equal(section.time_of_day, '14:01');
         assert.equal(section.time, (new Date('2006-02-07 14:01')).toString());
         assert.equal(section.words, 965);
-        assert.equal(section.duration, 7);
+        assert.equal(section.totalWords, 965);
+        assert.equal(section.duration, 7 * 60);
         assert.equal(section.talktype, 'speech');
         done();
       });
@@ -66,7 +67,7 @@ describe('Hansard.Parser', function(){
     it("should use adjournments at the end of speeches to calculate the duration of a speech", function(done){
       Hansard.byId('house-2006-02-07.13.8', function(err, speech){
         assert(speech, "No matching speech found");
-        assert.equal(speech.duration, Math.round(speech.words / 120));
+        assert.equal(speech.duration, Math.round(speech.words / 120) * 60);
         assert.equal(speech.talktype, 'speech');
         done();
       });
@@ -81,7 +82,7 @@ describe('Hansard.Parser', function(){
       });
     });
     
-    it("should set the speaker_id to be the member_id if it's over 100000", function(done){
+    it("should set the speaker_id to be the member_id if the speaker_id cannot be found", function(done){
       Hansard.byId('house-2006-02-07.13.8', function(err, speech){
         assert(speech, "No matching speech found");
         assert.equal(speech.speaker_id, 265);

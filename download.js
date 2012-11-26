@@ -5,7 +5,7 @@ var Hansard = require('./lib/hansard');
 var async = require('async');
 var MembersStream = require('./lib/members').MembersStream;
 var membersLoader = require('./lib/members-loader');
-var keywordSummaries = require('./lib/keyword-summaries');
+var query = require('./lib/query');
 require('date-utils');
 
 var argv = require('optimist')
@@ -37,11 +37,10 @@ workOutDateToRequest(function(err, from){
 
   var url = argv.url || 'http://data.openaustralia.org/scrapedxml';
   var to = argv.to && new Date(argv.to);
-  var checker = new Checker(url, from, to);
-  var parser = new Hansard.Parser();
+  var parser = new Hansard.Parser({ metadata: true });
   var apikey = argv.key || process.env.OPENAU_KEY;
 
-  async.parallel([
+  async.series([
 
     function(cb){
       // Stream member data into database
@@ -50,16 +49,23 @@ workOutDateToRequest(function(err, from){
     },
 
     function(cb){
-      // Stream handard data into database and regenerate keyword summary 
-      // tables if need be
+      // Stream handard data into database and regenerate keyword and 
+      // member summary tables
+      var checker = new Checker(url, from, to);
       checker
         .pipe(downloader)
         .pipe(parser)
-        .pipe(keywordSummaries)
-        .on('end', cb);
+        .pipe(query.createStream('db/phrases_summaries.sql'))
+        .pipe(query.createStream('db/member_summaries.sql'))
+        .on('end', cb)
+        .on('error', function(err){ cb(err); });
     }
 
   ], function(err){
+    if (err){
+      console.error(err);
+      process.exit(1);
+    }
     Hansard.end();
     console.error('ok');
   });

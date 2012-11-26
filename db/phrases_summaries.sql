@@ -1,3 +1,5 @@
+begin;
+
 DROP TABLE IF EXISTS phrases_summaries;
 CREATE TABLE phrases_summaries (
   text varchar(200) NOT NULL,
@@ -45,3 +47,5 @@ phrases inner join hansards on hansards.id = phrases.hansard_id inner join membe
 create index pss_text_idx on phrases_speaker_ids_summaries (text);
 create index pss_speaker_id on phrases_speaker_ids_summaries (speaker_id);
 create index pss_date_idx on phrases_speaker_ids_summaries (date);
+
+commit;

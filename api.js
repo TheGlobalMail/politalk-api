@@ -8,7 +8,7 @@ var db = require('./lib/db');
 var dateUtils = require('date-utils');
 
 var defaultTo = Date.today();
-var defaultFrom = Date.today().addMonths(-3);
+var defaultFrom = new Date('2006-01-01');
 
 function authorize(username, password) {
   return 'tgm' === username && process.env.AUTHPASS === password;
@@ -48,20 +48,26 @@ function getTo(param){
 }
 
 app.get('/api/members', function(req, res, next){
-  var from = getFrom(req.query.from);
-  var to = getTo(req.query.to);
+  var query;
+  var values;
 
-  var query = "select sum(duration) as duration, speaker, first_name, " +
-  "last_name, speaker_id, person_id, party, " +
-  "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
-  "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
-  "house, sum(words) as words, count(*) as total from hansards " + 
-  "inner join member on member.member_id = speaker_id " +
-  "where date between $1 and $2 " + 
-  "group by speaker_id,speaker,person_id,party,house,first_name,last_name " + 
-  "order by sum(duration) desc";
+  if (!req.query.from && !req.query.to){
+    query = "select * from member_summaries order by duration desc";
+    values = [];
+  }else{
+    query = "select sum(duration) as duration, speaker, first_name, " +
+      "last_name, speaker_id, person_id, party, " +
+      "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
+      "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
+      "house, sum(words) as words, count(*) as total, image from hansards " + 
+      "inner join member on member.member_id = speaker_id " +
+      "where date between $1 and $2 " + 
+      "group by speaker_id,speaker,person_id,party,house,first_name,last_name,image " + 
+      "order by sum(duration) desc";
+    values = [getFrom(req.query.from), getTo(req.query.to)];
+  }
 
-  db.query(query, [from, to], function(err, result) {
+  db.query(query, values, function(err, result) {
     var members;
     if (err) return next(err);
     members = result.rows;

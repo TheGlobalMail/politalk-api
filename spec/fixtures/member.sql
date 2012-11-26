@@ -6,6 +6,7 @@ CREATE TABLE member (
     last_name character varying(255) DEFAULT ''::character varying NOT NULL,
     constituency character varying(100) DEFAULT ''::character varying NOT NULL,
     party character varying(100) DEFAULT ''::character varying NOT NULL,
+    image varchar(255) DEFAULT NULL,
     entered_house date DEFAULT '1000-01-01'::date NOT NULL,
     left_house date DEFAULT '9999-12-31'::date NOT NULL,
     entered_reason character varying(100),
