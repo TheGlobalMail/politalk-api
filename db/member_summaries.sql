@@ -8,6 +8,9 @@ CREATE TABLE member_summaries (
   last_name character varying(255) DEFAULT ''::character varying NOT NULL,
   speaker_id integer DEFAULT 0 NOT NULL,
   image varchar(255) DEFAULT NULL,
+  entered_house date DEFAULT NULL,
+  left_house date DEFAULT NULL,
+  left_reason varchar(255) DEFAULT NULL,
   person_id integer DEFAULT 0 NOT NULL,
   house integer DEFAULT NULL,
   party varchar(100) DEFAULT NULL,
@@ -18,14 +21,17 @@ CREATE TABLE member_summaries (
 );
 
 insert into member_summaries(duration, speaker, first_name, last_name, speaker_id, 
-  person_id, party, interjections, speeches, house, words, total, image)
+  person_id, party, interjections, speeches, house, words, total, image, 
+  entered_house, left_house, left_reason)
 select sum(duration) as duration, speaker, first_name, 
 last_name, speaker_id, person_id, party, 
 sum(case when (talktype='interjection') then 1 else 0 end) as interjections,
 sum(case when (talktype='speech') then 1 else 0 end) as speeches,
-house, sum(words) as words, count(*) as total, image from hansards
+house, sum(words) as words, count(*) as total, image,
+entered_house, left_house, left_reason
+from hansards
 inner join member on member.member_id = speaker_id
-group by speaker_id,speaker,person_id,party,house,first_name,last_name,image 
+group by speaker_id,speaker,person_id,party,house,first_name,last_name,image,entered_house,left_house,left_reason
 order by sum(duration) desc;
 
 create index ms_durationx on member_summaries(duration);

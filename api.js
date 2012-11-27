@@ -59,7 +59,8 @@ app.get('/api/members', function(req, res, next){
       "last_name, speaker_id, person_id, party, " +
       "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
       "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
-      "house, sum(words) as words, count(*) as total, image from hansards " + 
+      "house, sum(words) as words, count(*) as total, image, entered_house, " +
+      "left_house, left_reason from hansards " + 
       "inner join member on member.member_id = speaker_id " +
       "where date between $1 and $2 " + 
       "group by speaker_id,speaker,person_id,party,house,first_name,last_name,image " + 
@@ -104,6 +105,12 @@ app.get('/api/keywords', function(req, res, next){
       "where date between $1 and $2 ";
     params.push(req.query.speaker_id);
     query += 'and speaker_id = $' + params.length + ' ';
+  }else if (req.query.person_id){
+    query = "select text, sum(frequency) as frequency " +
+      "from phrases_person_ids_summaries " + 
+      "where date between $1 and $2 ";
+    params.push(req.query.person_id);
+    query += 'and person_id = $' + params.length + ' ';
   }else{
     query = "select text, sum(frequency) as frequency " +
       "from phrases_summaries " + 

@@ -48,4 +48,20 @@ create index pss_text_idx on phrases_speaker_ids_summaries (text);
 create index pss_speaker_id on phrases_speaker_ids_summaries (speaker_id);
 create index pss_date_idx on phrases_speaker_ids_summaries (date);
 
+DROP TABLE IF EXISTS phrases_person_ids_summaries;
+CREATE TABLE phrases_person_ids_summaries (
+  text varchar(200) NOT NULL,
+  date date NOT NULL,
+  person_id integer DEFAULT NULL,
+  frequency integer DEFAULT 0,
+  words integer DEFAULT 0
+);
+
+insert into phrases_person_ids_summaries(text, date, person_id, frequency, words) select text, phrases.date, member.person_id, sum(frequency) as frequency, count(words) as words from 
+phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, member.person_id, text having sum(frequency) > 2;
+
+create index pps_text_idx on phrases_person_ids_summaries (text);
+create index pps_person_id on phrases_person_ids_summaries (person_id);
+create index pps_date_idx on phrases_person_ids_summaries (date);
+
 commit;
