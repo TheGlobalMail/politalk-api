@@ -63,7 +63,8 @@ app.get('/api/members', function(req, res, next){
       "left_house, left_reason from hansards " + 
       "inner join member on member.member_id = speaker_id " +
       "where date between $1 and $2 " + 
-      "group by speaker_id,speaker,person_id,party,house,first_name,last_name,image " + 
+      "group by speaker_id,speaker,person_id,party,house,first_name,last_name,image, " + 
+      "entered_house, left_house, left_reason " +
       "order by sum(duration) desc";
     values = [getFrom(req.query.from), getTo(req.query.to)];
   }
