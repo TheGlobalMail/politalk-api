@@ -5,6 +5,7 @@ var Hansard = require('./lib/hansard');
 var async = require('async');
 var MembersStream = require('./lib/members').MembersStream;
 var membersLoader = require('./lib/members-loader');
+var verifyMemberImages = require('./lib/verify-member-images');
 var query = require('./lib/query');
 require('date-utils');
 
@@ -45,7 +46,10 @@ workOutDateToRequest(function(err, from){
     function(cb){
       // Stream member data into database
       var members = new MembersStream({ apikey: apikey });
-      members.pipe(membersLoader).on('end', cb);
+      members
+        .pipe(verifyMemberImages)
+        .pipe(membersLoader)
+        .on('end', cb);
     },
 
     function(cb){
@@ -55,6 +59,7 @@ workOutDateToRequest(function(err, from){
       checker
         .pipe(downloader)
         .pipe(parser)
+        .pipe(metrics.streamCounter('Sections downloaded'))
         .pipe(query.createStream('db/phrases_summaries.sql'))
         .pipe(query.createStream('db/member_summaries.sql'))
         .on('end', cb)
@@ -62,12 +67,16 @@ workOutDateToRequest(function(err, from){
     }
 
   ], function(err){
-    if (err){
-      console.error(err);
-      process.exit(1);
-    }
     Hansard.end();
-    console.error('ok');
+    metrics.end(function(){
+      if (err){
+        console.error(err);
+        process.exit(1);
+      }else{
+        console.error('ok');
+        process.exit(0);
+      }
+    });
   });
 });
 

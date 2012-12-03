@@ -137,6 +137,10 @@ app.get('/api/dates', function(req, res, next){
   });
 });
 
+app.get('/api/die', function(req, res, next){
+  sdfsd();
+});
+
 var server = module.exports = app.listen(process.env.PORT || 8080);
 server.on('close', function(){
   db.end();
