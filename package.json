@@ -22,7 +22,7 @@
     "moment": "~1.7.2",
     "nodetime": "~0.6.3",
     "json-stream": "~0.1.0",
-    "gramophone": "git://github.com/bxjx/gramophone.git"
+    "gramophone": "~0.0.2"
   },
   "devDependencies": {
     "mocha": "~1.6.0",
