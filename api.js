@@ -51,23 +51,17 @@ app.get('/api/members', function(req, res, next){
   var query;
   var values;
 
-  if (!req.query.from && !req.query.to){
-    query = "select * from member_summaries order by duration desc";
-    values = [];
-  }else{
-    query = "select sum(duration) as duration, speaker, first_name, " +
-      "last_name, speaker_id, person_id, party, " +
-      "sum(case when (talktype='interjection') then 1 else 0 end) as interjections, " + 
-      "sum(case when (talktype='speech') then 1 else 0 end) as speeches, " +
-      "house, sum(words) as words, count(*) as total, image, entered_house, " +
-      "left_house, left_reason from hansards " + 
-      "inner join member on member.member_id = speaker_id " +
-      "where date between $1 and $2 " + 
-      "group by speaker_id,speaker,person_id,party,house,first_name,last_name,image, " + 
-      "entered_house, left_house, left_reason " +
-      "order by sum(duration) desc";
-    values = [getFrom(req.query.from), getTo(req.query.to)];
-  }
+  query = "select sum(duration) as duration, speaker, first_name, " +
+    "last_name, speaker_id, person_id, party, " +
+    "sum(interjections) as interjections, " + 
+    "sum(speeches) as speeches, " +
+    "house, sum(words) as words, count(*) as total, image, entered_house, " +
+    "left_house, left_reason from member_summaries " + 
+    "where date between $1 and $2 " + 
+    "group by speaker_id,speaker,person_id,party,house,first_name,last_name,image, " + 
+    "entered_house, left_house, left_reason " +
+    "order by sum(duration) desc";
+  values = [getFrom(req.query.from), getTo(req.query.to)];
 
   db.query(query, values, function(err, result) {
     var members;
