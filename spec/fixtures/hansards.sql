@@ -49,6 +49,7 @@ CREATE TABLE hansards (
 CREATE TABLE phrases (
     hansard_id character varying(26) DEFAULT NULL::character varying,
     text character varying(200) NOT NULL,
+    stem character varying(200) NOT NULL,
     frequency integer DEFAULT 0,
     date date NOT NULL
 );

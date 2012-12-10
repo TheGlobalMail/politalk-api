@@ -101,7 +101,8 @@ describe('Hansard.Parser', function(){
     it("extract keywords", function(done){
       Hansard.Phrases.bySpeechId('house-2012-10-30.3.3', function(err, keywords){
         assert(keywords.length);
-        assert(keywords[0].text);
+        assert.equal(keywords[0].text, 'human rights');
+        assert.equal(keywords[0].stem, 'human right');
         assert(keywords[0].frequency);
         assert.equal(keywords[0].date.toString(), new Date('2012-10-30'));
         done();
