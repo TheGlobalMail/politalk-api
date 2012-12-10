@@ -20,7 +20,7 @@
     "JSONStream": "~0.4.2",
     "rimraf": "~2.0.2",
     "moment": "~1.7.2",
-    "nodetime": "~0.6.3",
+    "nodetime": "~0.6.5",
     "json-stream": "~0.1.0",
     "gramophone": "~0.0.2"
   },

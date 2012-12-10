@@ -23,6 +23,10 @@ var cors = function(req, res, next) {
 };
 
 app.configure(function(){
+  if (metrics.nodetime){
+    app.use(metrics.nodetime.expressErrorHandler());
+  }
+  app.use(express.errorHandler()); 
   app.use(cors);
   app.use(express.compress());
   app.use(cache.middleware());

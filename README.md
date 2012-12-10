@@ -1,30 +1,19 @@
 # Politalk API
 
-There are currently two endpoints: `/api/members` and `/api/keywords`. Both
-accept `from` and `to` parameters in the format `2012-10-01`. The default date
-range is from 3 month ago to today.
+There are currently three endpoints: 
+
+* `/api/members`
+* `/api/keywords`
+* `/api/dates`
 
 The api supports CORS. We might add JSONp at some point.
 
+## Deploy
 
-## Todo
+`heroku deploy`
 
-* get old data
-* integration tests
-* pull down members
-* do olap for sparklines 
+Call to view various configuration variables `heroku config`.
 
-## Todd process
+## Downloading new data
 
-* Get list of xml files available
-  * emits data: date and url
-* Download an xml file
-  * emits data: date and xml
-* Parse xml file into objects with default attributes
-  * emits data: list of objects
-* Extra metadata
-  * emits data: as list of objects
-* Split data
-  * emits data as objects
-* Save data
-  * save the data to the database
+At 10am every day, `download.js` is run to check for new hansard data.
