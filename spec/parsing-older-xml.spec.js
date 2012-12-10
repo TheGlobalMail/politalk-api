@@ -14,7 +14,7 @@ describe('Hansard.Parser', function(){
 
     beforeEach(function(done){
       helpers.clearHansard(function(){
-        helpers.loadAllMembers(function(){
+        helpers.clearMembers(function(){
           var parser = new Hansard.Parser();
           parser.on('end', done);
           parser.on('error', done);
@@ -38,7 +38,6 @@ describe('Hansard.Parser', function(){
         assert.equal(section.time_of_day, '14:01');
         assert.equal(section.time, (new Date('2006-02-07 14:01')).toString());
         assert.equal(section.words, 965);
-        assert.equal(section.totalWords, 965);
         assert.equal(section.duration, 7 * 60);
         assert.equal(section.talktype, 'speech');
         done();

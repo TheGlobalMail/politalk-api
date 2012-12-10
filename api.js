@@ -5,7 +5,9 @@ var web = process.argv[2] || 'dist';
 var async = require('async');
 var _ = require('lodash');
 var db = require('./lib/db');
+var cache = require('./lib/cache');
 var dateUtils = require('date-utils');
+var server;
 
 var defaultTo = Date.today();
 var defaultFrom = new Date('2006-01-01');
@@ -23,18 +25,11 @@ var cors = function(req, res, next) {
 app.configure(function(){
   app.use(cors);
   app.use(express.compress());
+  app.use(cache.middleware());
   app.use(app.router);
   if (process.env.NODE_ENV === 'deliver'){
     app.use(express.basicAuth(authorize));
   }
-});
-
-app.configure('development', function(){
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
-
-app.configure('production', function(){
-  app.use(express.errorHandler());
 });
 
 function getFrom(param){
@@ -123,11 +118,9 @@ app.get('/api/keywords', function(req, res, next){
 });
 
 app.get('/api/dates', function(req, res, next){
-  var query = "select date from hansards group by date order by date";
-
-  db.query(query, function(err, result) {
+  getDates(function(err, dates) {
     if (err) return next(err);
-    res.json(_.pluck(result.rows, 'date'));
+    res.json(dates);
   });
 });
 
@@ -135,7 +128,19 @@ app.get('/api/die', function(req, res, next){
   sdfsd();
 });
 
-var server = module.exports = app.listen(process.env.PORT || 8080);
-server.on('close', function(){
-  db.end();
-});
+function getDates(cb){
+  var query = "select date from hansards group by date order by date";
+  db.query(query, function(err, result) {
+    if (err) return cb(err);
+    cb(null, _.pluck(result.rows, 'date'));
+  });
+}
+
+module.exports = app;
+
+if (!module.parent){
+  server = app.listen(process.env.PORT || 8080);
+  server.on('close', function(){
+    db.end();
+  });
+}

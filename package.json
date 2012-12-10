@@ -30,6 +30,9 @@
     "jasmine-node": "~1.0.26",
     "tap": "~0.3.2"
   },
+  "scripts": {
+    "test": "./node_modules/.bin/jasmine-node  spec"
+  },
   "engines": {
     "node": "0.8.x",
     "npm": "1.1.x"

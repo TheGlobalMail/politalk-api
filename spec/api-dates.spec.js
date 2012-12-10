@@ -10,19 +10,23 @@ describe("/api/dates", function(){
 
   var earliest = new Date('2012-09-01');
   var latest = new Date('2013-09-01');
-  var firstCall = true;
 
   // Add two headings for each date
   beforeEach(function(done){
     Hansard.clear(function(err){
       async.forEach([earliest, latest], function(date, done){
-        Hansard.addHeading({ id: 'test' + date.getYear(), date: date, html: 'test2' }, done);
-      }, done);
+        Hansard.addHeading({ id: 'test' + date.getYear(), date: date, html: 'test2' }, function(err){
+          helpers.startApp(api, done);
+        });
+      }, function(err){
+        if (err) return done(err);
+        helpers.calculateSummary(done);
+      });
     });
   });
 
   it("should return the oldest and most recent dates", function(done){
-    request('http://localhost:8080/api/dates', function(err, res, body){
+    request(helpers.url + '/api/dates', function(err, res, body){
       var json;
       assert(!err);
       assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
@@ -34,8 +38,7 @@ describe("/api/dates", function(){
   });
 
   afterEach(function(done){
-    Hansard.end();
-    api.close(done);
+    helpers.stopApp(done);
   });
 
 });
