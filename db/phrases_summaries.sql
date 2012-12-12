@@ -3,7 +3,7 @@ begin;
 DROP TABLE IF EXISTS phrases_summaries;
 CREATE TABLE phrases_summaries (
   text varchar(200) NOT NULL,
-  stem varchar(200) NOT NULL,
+  stem varchar(200),
   date date NOT NULL,
   frequency integer DEFAULT 0,
   words integer DEFAULT 0
@@ -19,7 +19,7 @@ create index ps_date_idx on phrases_summaries (date);
 DROP TABLE IF EXISTS phrases_houses_summaries;
 CREATE TABLE phrases_houses_summaries (
   text varchar(200) NOT NULL,
-  stem varchar(200) NOT NULL,
+  stem varchar(200),
   date date NOT NULL,
   house integer DEFAULT NULL,
   party varchar(100) DEFAULT NULL,
@@ -39,7 +39,7 @@ create index phs_date_idx on phrases_houses_summaries (date);
 DROP TABLE IF EXISTS phrases_speaker_ids_summaries;
 CREATE TABLE phrases_speaker_ids_summaries (
   text varchar(200) NOT NULL,
-  stem varchar(200) NOT NULL,
+  stem varchar(200),
   date date NOT NULL,
   speaker_id integer DEFAULT NULL,
   frequency integer DEFAULT 0,
@@ -57,7 +57,7 @@ create index pss_date_idx on phrases_speaker_ids_summaries (date);
 DROP TABLE IF EXISTS phrases_person_ids_summaries;
 CREATE TABLE phrases_person_ids_summaries (
   text varchar(200) NOT NULL,
-  stem varchar(200) NOT NULL,
+  stem varchar(200),
   date date NOT NULL,
   person_id integer DEFAULT NULL,
   frequency integer DEFAULT 0,
