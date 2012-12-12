@@ -11,11 +11,10 @@ describe("/api", function(){
 
   beforeEach(function(done){
     async.series([
-      helpers.clearMembers,
-      helpers.clearHansard,
-      helpers.loadHansard,
+      helpers.loadSchema,
       helpers.calculateMemberSummaries,
       helpers.calculateSummary,
+      helpers.loadSummaryFixture,
       function(cb){
         helpers.startApp(api, cb);
       }

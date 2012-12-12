@@ -13,7 +13,7 @@ describe("/api/dates", function(){
 
   // Add two headings for each date
   beforeEach(function(done){
-    Hansard.clear(function(err){
+    helpers.loadSchema(function(err){
       async.forEach([earliest, latest], function(date, done){
         Hansard.addHeading({ id: 'test' + date.getYear(), date: date, html: 'test2' }, function(err){
           helpers.startApp(api, done);

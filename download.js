@@ -7,6 +7,7 @@ var MembersStream = require('./lib/members').MembersStream;
 var membersLoader = require('./lib/members-loader');
 var verifyMemberImages = require('./lib/verify-member-images');
 var query = require('./lib/query');
+var cache = require('./lib/cache');
 require('date-utils');
 
 var argv = require('optimist')
@@ -62,7 +63,7 @@ workOutDateToRequest(function(err, from){
         .pipe(metrics.streamCounter('Sections downloaded'))
         .pipe(query.createStream('db/phrases_summaries.sql'))
         .pipe(query.createStream('db/member_summaries.sql'))
-        .pipe(query.createStream('db/summary.sql'))
+        .pipe(cache.rebuildStream())
         .on('end', cb)
         .on('error', function(err){ cb(err); });
     }

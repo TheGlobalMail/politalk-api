@@ -9,6 +9,10 @@ describe('Hansard.Parser', function(){
   var xml = fs.readFileSync('./spec/fixtures/representatives_debates/2012-10-30.xml');
   var date = new Date('2012-10-30');
 
+  beforeEach(function(done){
+    helpers.loadSchema(done);
+  });
+
   describe(".convertId", function(){
 
     it("should convert uk style ids to something shorter and nicer", function(){
@@ -48,13 +52,11 @@ describe('Hansard.Parser', function(){
     var specs = 4;
 
     beforeEach(function(done){
-      helpers.clearHansard(function(){
-        var parser = new Hansard.Parser();
-        parser.on('end', done);
-        parser.on('error', done);
-        parser.write({date: date, xml: xml});
-        parser.end();
-      });
+      var parser = new Hansard.Parser();
+      parser.on('end', done);
+      parser.on('error', done);
+      parser.write({date: date, xml: xml});
+      parser.end();
     });
 
     it("should extract headings", function(done){

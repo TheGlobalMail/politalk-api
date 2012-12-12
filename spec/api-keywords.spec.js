@@ -10,9 +10,9 @@ describe("/api/keywords", function(){
 
   beforeEach(function(done){
     async.series([
-      helpers.clearMembers,
-      helpers.clearHansard,
-      helpers.loadHansard,
+      helpers.loadSchema,
+      helpers.loadMemberFixture,
+      helpers.loadHansardFixtures,
       helpers.calculateMemberSummaries,
       helpers.calculatePhraseSummaries,
       helpers.calculateSummary,

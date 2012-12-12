@@ -13,8 +13,10 @@ describe('Hansard.Parser', function(){
     var lastDate = new Date('2020-11-3');
 
     beforeEach(function(done){
-      helpers.clearHansard(function(){
-        helpers.clearMembers(function(){
+      helpers.loadSchema(function(err){
+        if (err) throw err;
+        helpers.loadMemberFixture(function(err){
+          if (err) throw err;
           var parser = new Hansard.Parser();
           parser.on('end', done);
           parser.on('error', done);

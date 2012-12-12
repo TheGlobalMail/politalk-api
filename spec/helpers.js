@@ -3,9 +3,12 @@ var fs = require('fs');
 var Hansard = require('../lib/hansard');
 var request = require('request');
 var assert = require('assert');
+var _ = require('lodash');
 
 var testsRunning = 0;
 var port = 8085;
+var schemaLoaded = false;
+
 exports.server = null;
 
 exports.startApp = function(app, cb){
@@ -29,12 +32,16 @@ exports.stopApp = function(cb){
   }
 };
 
-exports.clearHansard = function(cb){
-  var query = fs.readFileSync(__dirname + '/fixtures/hansards.sql').toString();
+exports.loadSchema = function(cb){
+  if (schemaLoaded){
+    return db.query('delete from hansards; delete from member', cb);
+  }
+  var query = fs.readFileSync(__dirname + '/../db/schema.sql').toString();
+  schemaLoaded = true;
   db.query(query, cb);
 };
 
-exports.clearMembers = function(cb){
+exports.loadMemberFixture = function(cb){
   var query = fs.readFileSync(__dirname + '/fixtures/member.sql').toString();
   db.query(query, cb);
 };
@@ -44,7 +51,7 @@ exports.calculateMemberSummaries = function(cb){
   db.query(query, cb);
 };
 
-exports.loadHansard = function(cb){
+exports.loadHansardFixtures = function(cb){
   var html = '';
   var i = 0;
   var speech;
@@ -71,13 +78,18 @@ exports.calculateSummary = function(cb){
   db.query(query, cb);
 };
 
+exports.loadSummaryFixture = function(cb){
+  var query = fs.readFileSync(__dirname + '/fixtures/summary.sql').toString();
+  db.query(query, cb);
+};
+
 exports.testApi = function(url, cb){
   request(url, function(err, res, body){
     var json;
     assert(!err);
     assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
     json = JSON.parse(body);
-    assert(json.length);
+    assert(_.isArray(json));
     cb(err, json);
   });
 };

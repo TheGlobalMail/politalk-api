@@ -6,11 +6,11 @@ var async = require('async');
 var _ = require('lodash');
 var db = require('./lib/db');
 var cache = require('./lib/cache');
-var dateUtils = require('date-utils');
+var members = require('./lib/members');
+var keywords = require('./lib/keywords');
+var dates = require('./lib/dates');
 var server;
 
-var defaultTo = Date.today();
-var defaultFrom = new Date('2006-01-01');
 
 function authorize(username, password) {
   return 'tgm' === username && process.env.AUTHPASS === password;
@@ -26,6 +26,7 @@ var cors = function(req, res, next) {
 };
 
 app.configure(function(){
+  app.use(express.responseTime()); 
   if (metrics.nodetime){
     app.use(metrics.nodetime.expressErrorHandler());
   }
@@ -39,90 +40,22 @@ app.configure(function(){
   }
 });
 
-function getFrom(param){
-  var fromParam = new Date(param);
-  return isNaN(fromParam.valueOf()) ? defaultFrom : fromParam;
-}
-
-function getTo(param){
-  var toParam = new Date(param);
-  return isNaN(toParam.valueOf()) ? defaultTo : toParam;
-}
-
 app.get('/api/members', function(req, res, next){
-  var query;
-  var values;
-
-  query = "select sum(duration) as duration, speaker, first_name, " +
-    "last_name, speaker_id, person_id, party, " +
-    "sum(interjections) as interjections, " + 
-    "sum(speeches) as speeches, " +
-    "house, sum(words) as words, count(*) as total, image, entered_house, " +
-    "left_house, left_reason from member_summaries " + 
-    "where date between $1 and $2 " + 
-    "group by speaker_id,speaker,person_id,party,house,first_name,last_name,image, " + 
-    "entered_house, left_house, left_reason " +
-    "order by sum(duration) desc";
-  values = [getFrom(req.query.from), getTo(req.query.to)];
-
-  db.query(query, values, function(err, result) {
-    var members;
+  members.find(req.query.from, req.query.to, function(err, members){
     if (err) return next(err);
-    members = result.rows;
-    _.each(members, function(member, index){
-      member.id = member.speaker_id;
-      member.rank = index + 1;
-      member.dates = [];
-      member.durations = [];
-    });
     res.json(members);
   });
-
 });
 
 app.get('/api/keywords', function(req, res, next){
-  var params = [getFrom(req.query.from), getTo(req.query.to)];
-  var query = "select stem, max(text) as text, " + 
-    "string_agg(distinct(text), ',') as terms, sum(frequency) as frequency ";
- 
-  if (req.query.house || req.query.party){
-    query += "from phrases_houses_summaries " + 
-      "where date between $1 and $2 ";
-    if (req.query.house){
-      params.push(req.query.house);
-      query += 'and house = $' + params.length + ' ';
-    }
-    if (req.query.party){
-      params.push(req.query.party);
-      query += 'and party = $' + params.length + ' ';
-    }
-  }else if (req.query.speaker_id){
-    query += "from phrases_speaker_ids_summaries " + 
-      "where date between $1 and $2 ";
-    params.push(req.query.speaker_id);
-    query += 'and speaker_id = $' + params.length + ' ';
-  }else if (req.query.person_id){
-    query += "from phrases_person_ids_summaries " + 
-      "where date between $1 and $2 ";
-    params.push(req.query.person_id);
-    query += 'and person_id = $' + params.length + ' ';
-  }else{
-    query += "from phrases_summaries " + 
-      "where date between $1 and $2 ";
-  }
-
-  query += "group by stem " +
-    "order by frequency desc " +
-    "limit 40";
-
-  db.query(query, params, function(err, result) {
+  keywords.find(req.query, function(err, keywords) {
     if (err) return next(err);
-    res.json(result.rows);
+    res.json(keywords);
   });
 });
 
 app.get('/api/dates', function(req, res, next){
-  getDates(function(err, dates) {
+  dates.find(function(err, dates) {
     if (err) return next(err);
     res.json(dates);
   });
@@ -131,14 +64,6 @@ app.get('/api/dates', function(req, res, next){
 app.get('/api/die', function(req, res, next){
   sdfsd();
 });
-
-function getDates(cb){
-  var query = "select date from hansards group by date order by date";
-  db.query(query, function(err, result) {
-    if (err) return cb(err);
-    cb(null, _.pluck(result.rows, 'date'));
-  });
-}
 
 module.exports = app;
 
