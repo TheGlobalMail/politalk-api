@@ -17,8 +17,11 @@ function authorize(username, password) {
 }
 
 var cors = function(req, res, next) {
+  res.header('Cache-Control', 'max-age=300');
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET');
+  res.header('Access-Control-Expose-Headers', 'If-None-Match,Etag');
+  res.header('Access-Control-Max-Age', '36000');
   next();
 };
 
