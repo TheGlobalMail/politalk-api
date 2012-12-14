@@ -27,14 +27,14 @@ var cors = function(req, res, next) {
 
 app.configure(function(){
   app.use(express.responseTime()); 
-  if (metrics.nodetime){
-    app.use(metrics.nodetime.expressErrorHandler());
-  }
-  app.use(express.errorHandler()); 
   app.use(cors);
   app.use(express.compress());
   app.use(cache.middleware());
   app.use(app.router);
+  if (metrics.nodetime){
+    app.use(metrics.nodetime.expressErrorHandler());
+  }
+  app.use(express.errorHandler()); 
   if (process.env.NODE_ENV === 'deliver'){
     app.use(express.basicAuth(authorize));
   }
