@@ -8,7 +8,9 @@ var db = require('./lib/db');
 var cache = require('./lib/cache');
 var members = require('./lib/members');
 var keywords = require('./lib/keywords');
+var wordchoices = require('./lib/wordchoices');
 var dates = require('./lib/dates');
+var JSONStream = require('JSONStream');
 var server;
 
 
@@ -58,6 +60,28 @@ app.get('/api/dates', function(req, res, next){
   dates.find(function(err, dates) {
     if (err) return next(err);
     res.json(dates);
+  });
+});
+
+app.get('/api/wordchoices/asylum.csv', function(req, res, next){
+  var stream = wordchoices.createCSVStream();
+  stream.pipe(res);
+});
+
+app.get('/api/wordchoices/asylum', function(req, res, next){
+  var stream = wordchoices.createStream();
+  stream.pipe(JSONStream.stringify()).pipe(res);
+});
+
+app.get('/api/hansards', function(req, res, next){
+  var ids = _.map(req.query.ids, function(q){
+      return "'" + q + "'";
+    }).join(',');
+  var sql = 'select * from hansards inner join member on member.member_id = hansards.speaker_id where id in (' + 
+    ids + ') order by date, time';
+  if (!ids) return res.json([]);
+  db.query(sql, function(err, result){
+    res.json(result.rows);
   });
 });
 
