@@ -63,13 +63,11 @@ app.get('/api/dates', function(req, res, next){
   });
 });
 
-app.get('/api/wordchoices/asylum.csv', function(req, res, next){
-  var stream = wordchoices.createCSVStream();
-  stream.pipe(res);
-});
-
-app.get('/api/wordchoices/asylum', function(req, res, next){
-  var stream = wordchoices.createStream();
+app.get('/api/wordchoices', function(req, res, next){
+  var d = (new Date()).getTime();
+  var keywords = req.query.q.split(',');
+  if (!keywords.length) return res.json([]);
+  var stream = wordchoices.createStream(keywords);
   stream.pipe(JSONStream.stringify()).pipe(res);
 });
 
