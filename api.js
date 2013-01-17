@@ -7,6 +7,7 @@ var _ = require('lodash');
 var db = require('./lib/db');
 var cache = require('./lib/cache');
 var members = require('./lib/members');
+var hansard = require('./lib/hansard');
 var keywords = require('./lib/keywords');
 var wordchoices = require('./lib/wordchoices');
 var dates = require('./lib/dates');
@@ -63,24 +64,37 @@ app.get('/api/dates', function(req, res, next){
   });
 });
 
+app.get('/api/wordchoices/byterm', function(req, res, next){
+  var d = (new Date()).getTime();
+  var keywords = req.query.q.split(',');
+  if (!keywords.length) return res.json([]);
+  // limit to 5 words
+  async.map(keywords.slice(0, 5), wordchoices.forTerm, function(err, results){
+    if (err) return next(err);
+    var json = _.object(keywords, results);
+    if (req.query.callback){
+      res.send(req.query.callback + "(" + JSON.stringify(json) + ");");
+    }else{
+      res.json(json);
+    }
+  });
+});
+
 app.get('/api/wordchoices', function(req, res, next){
   var d = (new Date()).getTime();
   var keywords = req.query.q.split(',');
   if (!keywords.length) return res.json([]);
-  var stream = wordchoices.createStream(keywords);
-  stream.pipe(JSONStream.stringify()).pipe(res);
+  wordchoices.createStream(keywords.slice(0, 5))
+    .pipe(JSONStream.stringify())
+    .pipe(res);
 });
 
 app.get('/api/hansards', function(req, res, next){
-  var ids = _.map(req.query.ids, function(q){
-      return "'" + q + "'";
-    }).join(',');
-  var sql = 'select * from hansards inner join member on member.member_id = hansards.speaker_id where id in (' + 
-    ids + ') order by date, time';
-  if (!ids) return res.json([]);
-  db.query(sql, function(err, result){
-    res.json(result.rows);
-  });
+  if (!req.query.ids)
+    return next('No ids supplied');
+  hansard.createStream(req.query.ids)
+    .pipe(JSONStream.stringify())
+    .pipe(res);
 });
 
 app.get('/api/die', function(req, res, next){
