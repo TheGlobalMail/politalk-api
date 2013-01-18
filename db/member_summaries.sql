@@ -25,14 +25,14 @@ insert into member_summaries(duration, speaker, first_name, last_name, speaker_i
   person_id, party, interjections, speeches, house, words, total, image, 
   entered_house, left_house, left_reason, date)
 select sum(duration) as duration, speaker, first_name, 
-last_name, speaker_id, person_id, party, 
+last_name, speaker_id, person_id, member.party, 
 sum(case when (talktype='interjection') then 1 else 0 end) as interjections,
 sum(case when (talktype='speech') then 1 else 0 end) as speeches,
 house, sum(words) as words, count(*) as total, image,
 entered_house, left_house, left_reason, date
 from hansards
 inner join member on member.member_id = speaker_id
-group by speaker_id,speaker,person_id,party,house,first_name,last_name,image,entered_house,left_house,left_reason,date;
+group by speaker_id,speaker,person_id,member.party,house,first_name,last_name,image,entered_house,left_house,left_reason,date;
 
 create index ms_speaker_id on member_summaries(speaker_id, speaker, person_id, party, house, first_name, last_name, image, entered_house, left_house, left_reason);
 create index ms_durationx on member_summaries(duration);

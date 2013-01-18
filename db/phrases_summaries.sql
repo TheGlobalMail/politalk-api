@@ -27,8 +27,8 @@ CREATE TABLE phrases_houses_summaries (
   words integer DEFAULT 0
 );
 
-insert into phrases_houses_summaries(text, stem, date, house, party, frequency, words) select text, stem, phrases.date, house, party, sum(frequency) as frequency, count(words) as words from 
-phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, house, party, text, stem having sum(frequency) > 2;
+insert into phrases_houses_summaries(text, stem, date, house, party, frequency, words) select text, stem, phrases.date, house, member.party, sum(frequency) as frequency, count(words) as words from 
+phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, house, member.party, text, stem having sum(frequency) > 2;
 
 create index phs_text_idx on phrases_houses_summaries (text);
 create index phs_stem_idx on phrases_houses_summaries (stem);

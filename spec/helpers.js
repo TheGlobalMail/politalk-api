@@ -83,6 +83,11 @@ exports.loadSummaryFixture = function(cb){
   db.query(query, cb);
 };
 
+exports.loadSearchIndexes = function(cb){
+  var query = fs.readFileSync(__dirname + '/../db/search_hansard.sql').toString();
+  db.query(query, cb);
+};
+
 exports.testApi = function(url, cb){
   request(url, function(err, res, body){
     var json;

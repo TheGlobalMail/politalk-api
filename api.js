@@ -14,6 +14,8 @@ var dates = require('./lib/dates');
 var JSONStream = require('JSONStream');
 var server;
 
+var KEYWORD_LIMIT = 5;
+
 
 function authorize(username, password) {
   return 'tgm' === username && process.env.AUTHPASS === password;
@@ -64,12 +66,23 @@ app.get('/api/dates', function(req, res, next){
   });
 });
 
-app.get('/api/wordchoices/byterm', function(req, res, next){
+app.get('/api/wordchoices/term/:term', function(req, res, next){
+  if (!req.params.term) return res.json([]);
+  wordchoices.forTerm(req.params.term, function(err, results){
+    if (err) return next(err);
+    if (req.query.callback){
+      res.send(req.query.callback + "(" + JSON.stringify(results) + ");");
+    }else{
+      res.json(results);
+    }
+  });
+});
+
+app.get('/api/wordchoices', function(req, res, next){
   var d = (new Date()).getTime();
   var keywords = req.query.q.split(',');
   if (!keywords.length) return res.json([]);
-  // limit to 5 words
-  async.map(keywords.slice(0, 5), wordchoices.forTerm, function(err, results){
+  async.map(keywords.slice(0, KEYWORD_LIMIT), wordchoices.forTerm, function(err, results){
     if (err) return next(err);
     var json = _.object(keywords, results);
     if (req.query.callback){
@@ -80,6 +93,7 @@ app.get('/api/wordchoices/byterm', function(req, res, next){
   });
 });
 
+/*
 app.get('/api/wordchoices', function(req, res, next){
   var d = (new Date()).getTime();
   var keywords = req.query.q.split(',');
@@ -88,6 +102,7 @@ app.get('/api/wordchoices', function(req, res, next){
     .pipe(JSONStream.stringify())
     .pipe(res);
 });
+*/
 
 app.get('/api/hansards', function(req, res, next){
   if (!req.query.ids)

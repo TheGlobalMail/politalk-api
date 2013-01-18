@@ -26,7 +26,6 @@ describe("/api/hansards", function(){
         var json;
         assert(!err);
         assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
-        console.error("Body: " + body);
         json = JSON.parse(body);
         assert.equal(json[0].speaker, 'John Howard');
         done();
