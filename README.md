@@ -23,21 +23,21 @@ At 10am every day, `download.js` is run to check for new hansard data.
 * find fastest query 
   * what are limitations?
   * possibly stem?
-* make sure party gets in
 * make sure common words don't return ridiculous results
 * make sure longterm solutions can work
+
 * results for:
     * (X) 3 separate queries of: select date, party, sum(CountInString(html, $1))
       as freq, string_agg(id, ',') from hansards where searchable @@
       to_tsquery('''refugee''') group by date, party
       * 2363ms 
-    * results from cloudant and then work through them?
+    * (?) results from cloudant and then work through them?
       * any faster than postgres?
-    * (?) cloudant with facets
-      * can't do proper keyword matching or can it???
-      * ask in irc?
+    * (X) cloudant with facets
+      * can match keyword with keyword analyser
+      * can't do grouping
     * get matches and run regex in node.js
-    * create an index of words and phrases
+    * (?) create an index of words and phrases
       * check if phrases we already have are ok
         * don't think they are because we cut them off??
       * table:
@@ -50,14 +50,14 @@ At 10am every day, `download.js` is run to check for new hansard data.
           * party
           * date
           * snippet
-    * elastic search
-      * can do phrases
-      * can it do rollups? facets?
-      * can you control how much is returned?
-    * mongo
+    * (X) elastic search
+      * can do phrases and facets
+      * CAN'T count frequencies when doing facets (??)
+    * (X) mongo
       * regexs and map reduce are out
       * http://docs.mongodb.org/manual/release-notes/2.4/
         * db.collection.runCommand( "text", { search: "asylum seeker"} )
+      * needs latest version + no grouping??
     * xaipan
     * writing it for openau
     

@@ -15,15 +15,18 @@ var comparisons = [
     'asylum seeker',
     'boat people',
     'illegals',
-    'refugee'
+    'refugee',
+    'border security',
+    'queue jumper',
+    'stopping the boat'
   ],
   [
     'carbon tax',
     'clean energy future package',
     'carbon pric',
     'emissions trad',
-    'tax on pollution',
-    'tax on big pollutors'
+    'climate change denier',
+    'climate change sceptic'
   ],
   [
     'economic mismanagement',

@@ -15,15 +15,18 @@ var comparisons = [
     'asylum seeker',
     'boat people',
     'illegals',
-    'refugee'
+    'refugee',
+    'border security',
+    'queue jumper',
+    'stopping the boat'
   ],
   [
     'carbon tax',
     'clean energy future package',
     'carbon pric',
     'emissions trad',
-    'tax on pollution',
-    'tax on big pollutors'
+    'climate change denier',
+    'climate change sceptic'
   ],
   [
     'economic mismanagement',
@@ -72,11 +75,10 @@ async.forEach(comparisons, function(keywords, comparisonComplete){
         async.forEach(parties, function(party, done){
          //console.error('Doing ' + key(keyword, party));
           var query = "select string_agg(html, ' ') as html from hansards " +
-            "inner join member on member.member_id = hansards.speaker_id " +
-            "where html ~* $1 and extract(year from date) = $2 and extract(week from date) = $3 and party = $4 group by party, date;";
+            "where html ~* $1 and extract(year from date) = $2 and extract(week from date) = $3 and party = $4;";
           db.query(query, [keyword, date.year, date.week, party], function(err, result){
             if (err) return done(err);
-            var count = result.rowCount && result.rows[0].html.match(new RegExp(keyword, "igm"));
+            var count = result.rowCount && result.rows[0].html && result.rows[0].html.match(new RegExp(keyword, "igm"));
             datum[key(keyword, party)] = count ? count.length : 0;
             //console.error(key(keyword, party) + ": " + (count ? count.length : 0));
             done();
