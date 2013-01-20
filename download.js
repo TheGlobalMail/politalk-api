@@ -63,7 +63,6 @@ workOutDateToRequest(function(err, from){
         .pipe(metrics.streamCounter('Sections downloaded'))
         .pipe(query.createStream('db/phrases_summaries.sql'))
         .pipe(query.createStream('db/member_summaries.sql'))
-        .pipe(query.createStream('db/search_hansard.sql'))
         .pipe(cache.rebuildStream())
         .on('end', cb)
         .on('error', function(err){ cb(err); });
