@@ -24,6 +24,8 @@ At 10am every day, `download.js` is run to check for new hansard data.
   * what are limitations?
   * possibly stem?
 * make sure common words don't return ridiculous results
+  * limit results?
+  * pretest how many hits
 * make sure longterm solutions can work
 
 * results for:
