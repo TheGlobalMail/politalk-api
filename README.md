@@ -28,6 +28,18 @@ At 10am every day, `download.js` is run to check for new hansard data.
   * pretest how many hits
 * make sure longterm solutions can work
 
+
+* more thoughts:
+  * get off heroku for long queries
+  * shard it out
+
+* inverted index
+  * search for word matches
+  * store the index
+  * stem, hansardid, position
+  * query keywords
+    * split keyword
+
 * results for:
     * (X) 3 separate queries of: select date, party, sum(CountInString(html, $1))
       as freq, string_agg(id, ',') from hansards where searchable @@
@@ -62,5 +74,9 @@ At 10am every day, `download.js` is run to check for new hansard data.
       * needs latest version + no grouping??
     * xaipan
     * writing it for openau
+    * use websockets
+      * stream back results
+        * get length
+        * then work through them
     
 * cache results (by complete or by word?)
