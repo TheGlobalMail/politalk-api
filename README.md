@@ -20,6 +20,10 @@ At 10am every day, `download.js` is run to check for new hansard data.
 
 ## Word Choices API
 
+* rickshaw
+  * get weeks data
+    * use it as index for x dimension
+
 * find fastest query 
   * what are limitations?
   * possibly stem?
@@ -33,12 +37,17 @@ At 10am every day, `download.js` is run to check for new hansard data.
   * get off heroku for long queries
   * shard it out
 
+* big query
+  * 946629029892
+
 * inverted index
-  * search for word matches
-  * store the index
-  * stem, hansardid, position
-  * query keywords
-    * split keyword
+  * perhaps enforce that the first word must not be a stop word (DONE)
+    * or at least 'the', 'is', 'once'
+  * http://stackoverflow.com/questions/8839117/postgresql-date-query-performance-problems
+  * `
+    select party,date,count(word1) from wordchoice_tokens where token1
+    = 'climat' and token2 = 'chang' group by party,date order by party, date;
+    `
 
 * results for:
     * (X) 3 separate queries of: select date, party, sum(CountInString(html, $1))
@@ -67,6 +76,7 @@ At 10am every day, `download.js` is run to check for new hansard data.
     * (X) elastic search
       * can do phrases and facets
       * CAN'T count frequencies when doing facets (??)
+      * http://stackoverflow.com/questions/13217849/elasticsearch-return-term-frequency-of-a-single-field
     * (X) mongo
       * regexs and map reduce are out
       * http://docs.mongodb.org/manual/release-notes/2.4/

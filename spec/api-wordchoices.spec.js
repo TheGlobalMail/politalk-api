@@ -20,7 +20,7 @@ describe("/api/wordchoices/term/:term", function(){
     ], done);
   });
 
-  it("should return a summar of how the word has been used over time", function(done){
+  it("should return a summary of how the word has been used over time", function(done){
     request(helpers.url + '/api/wordchoices/term/api', function(err, res, body){
       var json;
       assert(!err);
@@ -28,7 +28,7 @@ describe("/api/wordchoices/term/:term", function(){
       json = JSON.parse(body);
       assert.equal(json.length, 1);
       assert.equal(json[0].party, 'Liberal Party');
-      assert(json[0].date.toString().match('2012-10-10'));
+      assert(json[0].week.toString().match('W30-2012'));
       assert(json[0].ids, 'test');
       assert.equal(json[0].freq, 12);
       done();

@@ -66,6 +66,13 @@ app.get('/api/dates', function(req, res, next){
   });
 });
 
+app.get('/api/weeks', function(req, res, next){
+  dates.weeks(function(err, weeks) {
+    if (err) return next(err);
+    res.json(weeks);
+  });
+});
+
 app.get('/api/wordchoices/term/:term', function(req, res, next){
   if (!req.params.term) return res.json([]);
   wordchoices.forTerm(req.params.term, function(err, results){
