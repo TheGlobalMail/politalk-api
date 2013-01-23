@@ -28,9 +28,9 @@ describe("/api/wordchoices/term/:term", function(){
       json = JSON.parse(body);
       assert.equal(json.length, 1);
       assert.equal(json[0].party, 'Liberal Party');
-      assert(json[0].week.toString().match('W30-2012'));
+      assert(json[0].week.toString().match('2012-41'));
       assert(json[0].ids, 'test');
-      assert.equal(json[0].freq, 12);
+      assert.equal(json[0].freq, 1);
       done();
     });
 

@@ -7,7 +7,7 @@ BEGIN
 END;
 ' LANGUAGE plpgsql;
 
-DROP TRIGGER extra_hansards on hansards;
+DROP TRIGGER if exists extra_hansards on hansards;
 CREATE TRIGGER extra_hansards BEFORE INSERT OR UPDATE
 ON hansards FOR EACH ROW
 EXECUTE PROCEDURE calculate_extra_hansards ();

@@ -84,8 +84,12 @@ exports.loadSummaryFixture = function(cb){
 };
 
 exports.loadSearchIndexes = function(cb){
-  var query = fs.readFileSync(__dirname + '/../db/search_hansard.sql').toString();
-  db.query(query, cb);
+  var query = fs.readFileSync(__dirname + '/../db/tokens_wordchoices.sql').toString();
+  var insert = "insert into wordchoice_tokens (word1,token1,hansard_id,party,date) values ('apis','api','test','Liberal Party','2012-10-10')";
+  db.query(query, function(err){
+    if (err) return cb(err);
+    db.query(insert, cb);
+  });
 };
 
 exports.testApi = function(url, cb){

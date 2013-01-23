@@ -5,7 +5,7 @@ var moment = require('moment');
 
 var options  = {};
 
-glob("*2007*.csv", options, function (err, files){
+glob("*2008*.csv", options, function (err, files){
   async.forEachSeries(files, function(file, done){
     var start = new Date();
     var path = __dirname + '/' + file;

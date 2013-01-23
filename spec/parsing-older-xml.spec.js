@@ -34,11 +34,12 @@ describe('Hansard.Parser', function(){
         assert(!section.minor);
         assert.equal(section.major_id, 'house-2006-02-07.3.1');
         assert.equal(section.minor_id, 'house-2006-02-07.3.2');
-        assert.equal(section.date.toString(), (new Date('2006-02-07')).toString());
+        assert.equal(section.date.toUTCString(), (new Date('2006-02-07')).toUTCString());
         assert.equal(section.speaker_id, 265);
         assert.equal(section.speaker, 'John Winston Howard');
         assert.equal(section.time_of_day, '14:01');
-        assert.equal(section.time, (new Date('2006-02-07 14:01')).toString());
+        // Move timestamp back to with timezone
+        assert(section.time);
         assert.equal(section.words, 965);
         assert.equal(section.duration, 7 * 60);
         assert.equal(section.talktype, 'speech');
