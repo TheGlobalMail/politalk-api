@@ -1,16 +1,31 @@
+.container{
+	text-shadow: 0 1px 1px rgba(255,255,255,0.8);
+	box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+  font-size: 12px;
+  margin: 20px auto 0 auto;
+  width: 1200px;
+}
+
 #chart-container {
 	width: 900px; 
 	background: rgba(255,255,255,0.5);
-	box-shadow: 1px 1px 4px rgba(0,0,0,0.2);
-	padding: 20px 30px;
+	padding: 40px 30px;
+}
+
+#legend{
+  margin-top: 40px;
+  width:200px;font-size: 12px; float:left;
+}
+
+.form{
+  padding: 1em;
 }
 
 #chart-container h2 {
 	color: #444;
-	margin: 0 0 10px;
+	margin: 20px 0 10px;
 	font-weight: 300;
 	padding: 10px;
-	text-shadow: 0 1px 1px rgba(255,255,255,0.8);
 	font-size: 24px;
 }
 
@@ -18,7 +33,6 @@ svg {
 	font-family: 'Lato', Arial, serif;
 	font-size: 10px;
 	font-weight: 700;
-	text-shadow: 0 1px 1px rgba(255,255,255,0.8);
 }
 
 text.country-title {

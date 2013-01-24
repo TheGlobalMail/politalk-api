@@ -13,11 +13,31 @@
     <script src="vendor/async.min.js"></script>
   </head>
   <body>
+    <div>
+    </div>
     <div class="container">
-      <table id="legend" style="width:200px;font-size: 12px; float:left;">
+      <div class="form">
+        <form method="GET">
+          <input name="q1" type="text" size="60"/>
+          <input type="checkbox" name="c1" checked="true" value="1"/><em>Check if you want match the words exactly</em>
+          <br />
+          <input name="q2" type="text" size="60"/>
+          <input type="checkbox" name="c2" checked="true" value="1"/><em>Check if you want match the words exactly</em>
+          <br />
+          <input name="q3" type="text" size="60"/>
+          <input type="checkbox" name="c3" checked="true" value="1"/><em>Check if you want match the words exactly</em>
+          <br />
+          <input name="q4" type="text" size="60"/>
+          <input type="checkbox" name="c4" checked="true" value="1"/><em>Check if you want match the words exactly</em>
+          <br />
+          <input type="submit" value="go!" />
+        </form>
+      </form>
+      <table id="legend" style="">
         <tbody></tbody>
       </table>
       <div id="chart-container" style="float:left;"></div>
+      <div style="clear:both"></div>
     </div>
     <script src="app.js"></script>
   </body>

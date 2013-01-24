@@ -19,19 +19,33 @@ var partyColours = d3.scale.ordinal()
 app.terms = [];
 app.data = [];
 
-loadData();
-
+$(function(){
+  loadData();
+});
 
 function loadData(){
 
-  app.terms = _.compact(getURLParameter('q').split(','));
+  app.terms = [];
+  app.complete = [];
+  _.each(_.range(4), function(index){
+    var n = index + 1;
+    var keyword = getURLParameter('q' + n);
+    var complete = getURLParameter('c' + n);
+    if (keyword && keyword.match(/\w/)){
+      app.terms.push(keyword);
+      $('input[name="q'+ app.terms.length +'"]').val(keyword);
+      app.complete.push(complete);
+      $('input[name="c'+ app.complete.length +'"]').prop('checked', !!complete);
+    }
+  });
 
   // TODO bulk load this perhaps
   $.getJSON('http://localhost:8080/api/weeks', function(data){
     app.weeks = data;
     app.weeksIndex = _.object(data, _.range(data.length));
-    async.map(app.terms, function(term, done){
-      $.getJSON('http://localhost:8080/api/wordchoices/term/' + term, {c: getURLParameter('c')}, function(data){
+
+    async.map(_.zip(app.terms, app.complete), function(termInfo, done){
+      $.getJSON('http://localhost:8080/api/wordchoices/term/' + termInfo[0], {c: termInfo[1]}, function(data){
         done(null, data);
       });
     }, function(err, results){
@@ -62,7 +76,11 @@ function renderCharts(){
 
   _.each(app.terms, function(term, i){
     options.index = i;
-    renderChart(svg, options, term, app.data[i]);
+    if (!app.data[i].length){
+      $('#chart-container').append('<strong style="margin-left:40px">No mentions of ' + term + " found. Try again</strong><br />");
+    }else{
+      renderChart(svg, options, term, app.data[i]);
+    }
   });
 
   renderLegend();
@@ -80,9 +98,9 @@ function renderLegend(){
 }
 
 function getURLParameter(name){
-  return decodeURI(
-    (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[,''])[1]
-  );
+  return decodeURIComponent(
+    (RegExp(name + '=' + '([^&$#]+)').exec(location.search)||['',''])[1]
+  ).replace(/\+/g, ' ');
 }
 
 
