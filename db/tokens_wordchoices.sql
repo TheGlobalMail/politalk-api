@@ -28,4 +28,7 @@ CREATE INDEX wt_party_date_idx ON wordchoice_tokens USING btree (party, date);
 CREATE INDEX wt_token1_idx ON wordchoice_tokens USING btree (token1);
 CREATE INDEX wt_token12_idx ON wordchoice_tokens USING btree (token1, token2);
 CREATE INDEX wt_token123_idx ON wordchoice_tokens USING btree (token1, token2, token3);
+CREATE INDEX wt_word1_idx ON wordchoice_tokens USING btree (word1);
+CREATE INDEX wt_word12_idx ON wordchoice_tokens USING btree (word1, word2);
+CREATE INDEX wt_word123_idx ON wordchoice_tokens USING btree (word1, word2, word3);
 CREATE INDEX wt_week_idx ON wordchoice_tokens USING btree (week);

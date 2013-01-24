@@ -74,42 +74,8 @@ app.get('/api/weeks', function(req, res, next){
 });
 
 app.get('/api/wordchoices/term/:term', function(req, res, next){
-  /*
-  return res.json([
-    {
-      "party": "Australian Democrats",
-      "week": '2010-12',
-      "freq": Math.floor(Math.random()*100),
-      "ids": "senate-2006-12-04.12.1,senate-2008-03-17.5.1,senate-2008-05-14.87.3,senate-2008-05-15.115.3"
-    },
-    {
-      "party": "Australian Democrats",
-      "week": '2012-29',
-      "freq": Math.floor(Math.random()*100),
-      "ids": "senate-2006-12-04.12.1,senate-2008-03-17.5.1,senate-2008-05-14.87.3,senate-2008-05-15.115.3"
-    },
-    {
-      "party": "Liberal Party",
-      "week": '2009-4',
-      "freq": Math.floor(Math.random()*100),
-      "ids": "senate-2006-12-04.12.1,senate-2008-03-17.5.1,senate-2008-05-14.87.3,senate-2008-05-15.115.3"
-    },
-    {
-      "party": "Liberal Party",
-      "week": '2011-18',
-      "freq": Math.floor(Math.random()*100),
-      "ids": "senate-2006-12-04.12.1,senate-2008-03-17.5.1,senate-2008-05-14.87.3,senate-2008-05-15.115.3"
-    },
-    {
-      "party": "Liberal Party",
-      "week": '2012-29',
-      "freq": Math.floor(Math.random()*100),
-      "ids": "senate-2006-12-04.12.1,senate-2008-03-17.5.1,senate-2008-05-14.87.3,senate-2008-05-15.115.3"
-    }
-  ]);
-  */
   if (!req.params.term) return res.json([]);
-  wordchoices.forTerm(req.params.term, function(err, results){
+  wordchoices.forTerm(req.params.term, req.query.c, function(err, results){
     if (err) return next(err);
     if (req.query.callback){
       res.send(req.query.callback + "(" + JSON.stringify(results) + ");");
@@ -118,32 +84,6 @@ app.get('/api/wordchoices/term/:term', function(req, res, next){
     }
   });
 });
-
-app.get('/api/wordchoices', function(req, res, next){
-  var d = (new Date()).getTime();
-  var keywords = req.query.q.split(',');
-  if (!keywords.length) return res.json([]);
-  async.map(keywords.slice(0, KEYWORD_LIMIT), wordchoices.forTerm, function(err, results){
-    if (err) return next(err);
-    var json = _.object(keywords, results);
-    if (req.query.callback){
-      res.send(req.query.callback + "(" + JSON.stringify(json) + ");");
-    }else{
-      res.json(json);
-    }
-  });
-});
-
-/*
-app.get('/api/wordchoices', function(req, res, next){
-  var d = (new Date()).getTime();
-  var keywords = req.query.q.split(',');
-  if (!keywords.length) return res.json([]);
-  wordchoices.createStream(keywords.slice(0, 5))
-    .pipe(JSONStream.stringify())
-    .pipe(res);
-});
-*/
 
 app.get('/api/hansards', function(req, res, next){
   if (!req.query.ids)
