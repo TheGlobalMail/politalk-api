@@ -2,10 +2,14 @@ var glob = require('glob');
 var exec = require('child_process').exec;
 var async = require('async');
 var moment = require('moment');
+var _ = require('lodash');
 
 var options  = {};
 
-glob("*2008*.csv", options, function (err, files){
+glob("*.csv", options, function (err, files){
+  files = _.select(files, function(file){
+    return file.match(/(2009|2010|2011|2012)/);
+  });
   async.forEachSeries(files, function(file, done){
     var start = new Date();
     var path = __dirname + '/' + file;
