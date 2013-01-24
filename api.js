@@ -43,6 +43,7 @@ app.configure(function(){
   if (process.env.NODE_ENV === 'deliver'){
     app.use(express.basicAuth(authorize));
   }
+  app.use(express.static(__dirname + '/www'));
 });
 
 app.get('/api/members', function(req, res, next){
