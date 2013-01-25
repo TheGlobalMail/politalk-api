@@ -10,73 +10,121 @@ SET client_min_messages = warning;
 
 SET search_path = public, pg_catalog;
 
---DROP INDEX public.text_idx;
---DROP INDEX public.stem_idx;
---DROP INDEX public.speaker_idx;
---DROP INDEX public.searchable_idx;
---DROP INDEX public.pss_text_idx;
---DROP INDEX public.pss_stem_idx;
---DROP INDEX public.pss_speaker_id;
---DROP INDEX public.pss_date_idx;
---DROP INDEX public.psm_text_idx;
---DROP INDEX public.psm_speaker_id;
---DROP INDEX public.psm_date_idx;
---DROP INDEX public.ps_text_idx;
---DROP INDEX public.ps_stem_idx;
---DROP INDEX public.ps_date_idx;
---DROP INDEX public.pps_text_idx;
---DROP INDEX public.pps_stem_idx;
---DROP INDEX public.pps_person_id;
---DROP INDEX public.pps_date_idx;
---DROP INDEX public.pm_text_idx;
---DROP INDEX public.pm_date_idx;
---DROP INDEX public.phs_text_idx;
---DROP INDEX public.phs_stem_idx;
---DROP INDEX public.phs_party;
---DROP INDEX public.phs_house;
---DROP INDEX public.phs_date_idx;
---DROP INDEX public.phm_text_idx;
---DROP INDEX public.phm_party;
---DROP INDEX public.phm_house;
---DROP INDEX public.phm_date_idx;
---DROP INDEX public.party_idx;
---DROP INDEX public.partied_idx;
---DROP INDEX public.ms_speaker_id;
---DROP INDEX public.ms_durationx;
---DROP INDEX public.ms_datex;
---DROP INDEX public.house_idx;
---DROP INDEX public.hansard_idx;
---DROP INDEX public.duration_idx;
---DROP INDEX public.datex;
---DROP INDEX public.date_party_idx;
---DROP INDEX public.date_idx;
---ALTER TABLE ONLY public.member DROP CONSTRAINT member_pkey;
---ALTER TABLE ONLY public.hansards DROP CONSTRAINT hansards_pkey;
-DROP TABLE IF EXISTS public.summaries;
-DROP TABLE IF EXISTS public.phrases_summaries;
-DROP TABLE IF EXISTS public.phrases_speaker_ids_summaries;
-DROP TABLE IF EXISTS public.phrases_speaker_ids_months;
-DROP TABLE IF EXISTS public.phrases_person_ids_summaries;
-DROP TABLE IF EXISTS public.phrases_months;
-DROP TABLE IF EXISTS public.phrases_houses_summaries;
-DROP TABLE IF EXISTS public.phrases_houses_months;
-DROP TABLE IF EXISTS public.phrases;
-DROP TABLE IF EXISTS public.member_summaries;
-DROP TABLE IF EXISTS public.member;
-DROP TABLE IF EXISTS public.hansards;
-DROP FUNCTION if exists public.countinstring(text, text, text);
-DROP FUNCTION if exists public.countinstring(text, text);
--- DROP EXTENSION plpgsql;
--- DROP SCHEMA public;
--- DROP DATABASE politalk;
+drop trigger if exists extra_wordchoice_tokens ON public.wordchoice_tokens;
+drop trigger if exists extra_hansards ON public.hansards;
+drop index if exists public.wt_word1_idx;
+drop index if exists public.wt_word12_idx;
+drop index if exists public.wt_word123_idx;
+drop index if exists public.wt_week_idx;
+drop index if exists public.wt_token1_idx;
+drop index if exists public.wt_token12_idx;
+drop index if exists public.wt_token123_idx;
+drop index if exists public.wt_party_date_idx;
+drop index if exists public.wt_lower_word1_idx;
+drop index if exists public.wt_lower_word12_idx;
+drop index if exists public.text_idx;
+drop index if exists public.stem_idx;
+drop index if exists public.speaker_idx;
+drop index if exists public.pss_text_idx;
+drop index if exists public.pss_stem_idx;
+drop index if exists public.pss_speaker_id;
+drop index if exists public.pss_date_idx;
+drop index if exists public.psm_text_idx;
+drop index if exists public.psm_speaker_id;
+drop index if exists public.psm_date_idx;
+drop index if exists public.ps_text_idx;
+drop index if exists public.ps_stem_idx;
+drop index if exists public.ps_date_idx;
+drop index if exists public.pps_text_idx;
+drop index if exists public.pps_stem_idx;
+drop index if exists public.pps_person_id;
+drop index if exists public.pps_date_idx;
+drop index if exists public.pm_text_idx;
+drop index if exists public.pm_date_idx;
+drop index if exists public.phs_text_idx;
+drop index if exists public.phs_stem_idx;
+drop index if exists public.phs_party;
+drop index if exists public.phs_house;
+drop index if exists public.phs_date_idx;
+drop index if exists public.phm_text_idx;
+drop index if exists public.phm_party;
+drop index if exists public.phm_house;
+drop index if exists public.phm_date_idx;
+drop index if exists public.party_idx;
+drop index if exists public.partied_idx;
+drop index if exists public.ms_speaker_id;
+drop index if exists public.ms_durationx;
+drop index if exists public.ms_datex;
+drop index if exists public.house_idx;
+drop index if exists public.hansard_idx;
+drop index if exists public.duration_idx;
+drop index if exists public.datex;
+drop index if exists public.date_party_idx;
+drop index if exists public.date_idx;
+ALTER TABLE ONLY public.member DROP CONSTRAINT member_pkey;
+ALTER TABLE ONLY public.hansards DROP CONSTRAINT hansards_pkey;
+drop table if exists public.wordchoice_tokens;
+drop table if exists public.summaries;
+drop table if exists public.phrases_summaries;
+drop table if exists public.phrases_speaker_ids_summaries;
+drop table if exists public.phrases_speaker_ids_months;
+drop table if exists public.phrases_person_ids_summaries;
+drop table if exists public.phrases_months;
+drop table if exists public.phrases_houses_summaries;
+drop table if exists public.phrases_houses_months;
+drop table if exists public.phrases;
+drop table if exists public.member_summaries;
+drop table if exists public.member;
+drop table if exists public.hansards;
+drop function if exists public.countinstring(text, text, text);
+drop function if exists public.countinstring(text, text);
+drop function if exists public.calculate_extra_wordchoice_tokens();
+drop function if exists public.calculate_extra_hansards();
 --
 -- Name: public; Type: SCHEMA; Schema: -; Owner: -
 --
 
-
---
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
 --
+
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+--
+-- Name: calculate_extra_hansards(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION calculate_extra_hansards() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW.party = (select party from member m where  NEW.speaker_id = m.member_id limit 1) || '';
+  NEW.partied = (NEW.party not in ('CWM', 'DPRES', 'Speaker', 'President', 'PRES', 'SPK', 'Deputy', 'Deputy-Speaker', '') and NEW.party is not null);
+  NEW.stripped_html = regexp_replace(NEW.html, '<.*?>', ' ', 'g');
+  RETURN NEW;
+END;
+$$;
+
+
+--
+-- Name: calculate_extra_wordchoice_tokens(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION calculate_extra_wordchoice_tokens() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW.week = extract(year from NEW.date) || '-' || lpad(extract(week from NEW.date)::text, 2, '0');
+  RETURN NEW;
+END;
+$$;
+
 
 --
 -- Name: countinstring(text, text); Type: FUNCTION; Schema: public; Owner: -
@@ -100,6 +148,10 @@ CREATE FUNCTION countinstring(text, text, text) RETURNS integer
 $_$;
 
 
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
 --
 -- Name: hansards; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
@@ -120,8 +172,7 @@ CREATE TABLE hansards (
     talktype character varying(50) DEFAULT NULL::character varying,
     words integer,
     stripped_html character varying,
-    searchable tsvector,
-    party character varying(100) DEFAULT ''::character varying NOT NULL,
+    party character varying(100) DEFAULT ''::character varying,
     partied boolean
 );
 
@@ -291,6 +342,24 @@ CREATE TABLE summaries (
     keywords text,
     dates text,
     version integer DEFAULT 0
+);
+
+
+--
+-- Name: wordchoice_tokens; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE wordchoice_tokens (
+    word1 character varying(100),
+    token1 character varying(100),
+    word2 character varying(100),
+    token2 character varying(100),
+    word3 character varying(100),
+    token3 character varying(100),
+    hansard_id character varying(26) DEFAULT NULL::character varying NOT NULL,
+    party character varying(100) DEFAULT ''::character varying NOT NULL,
+    date date NOT NULL,
+    week character varying(7)
 );
 
 
@@ -563,13 +632,6 @@ CREATE INDEX pss_text_idx ON phrases_speaker_ids_summaries USING btree (text);
 
 
 --
--- Name: searchable_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX searchable_idx ON hansards USING gin (searchable);
-
-
---
 -- Name: speaker_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -589,9 +651,90 @@ CREATE INDEX stem_idx ON phrases USING btree (stem);
 
 CREATE INDEX text_idx ON phrases USING btree (text);
 
-drop trigger if exists tsvectorupdate ON public.hansards;;
--- CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON hansards FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(searchable, 'pg_catalog.english', stripped_html);
-CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON hansards FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger(searchable, 'pg_catalog.english', stripped_html);
+
+--
+-- Name: wt_lower_word12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_lower_word12_idx ON wordchoice_tokens USING btree (lower((word1)::text), lower((word2)::text));
+
+
+--
+-- Name: wt_lower_word1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_lower_word1_idx ON wordchoice_tokens USING btree (lower((word1)::text));
+
+
+--
+-- Name: wt_party_date_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_party_date_idx ON wordchoice_tokens USING btree (party, date);
+
+
+--
+-- Name: wt_token123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_token123_idx ON wordchoice_tokens USING btree (token1, token2, token3);
+
+
+--
+-- Name: wt_token12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_token12_idx ON wordchoice_tokens USING btree (token1, token2);
+
+
+--
+-- Name: wt_token1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_token1_idx ON wordchoice_tokens USING btree (token1);
+
+
+--
+-- Name: wt_week_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_week_idx ON wordchoice_tokens USING btree (week);
+
+
+--
+-- Name: wt_word123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_word123_idx ON wordchoice_tokens USING btree (word1, word2, word3);
+
+
+--
+-- Name: wt_word12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_word12_idx ON wordchoice_tokens USING btree (word1, word2);
+
+
+--
+-- Name: wt_word1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_word1_idx ON wordchoice_tokens USING btree (word1);
+
+
+--
+-- Name: extra_hansards; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER extra_hansards BEFORE INSERT OR UPDATE ON hansards FOR EACH ROW EXECUTE PROCEDURE calculate_extra_hansards();
+
+
+--
+-- Name: extra_wordchoice_tokens; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER extra_wordchoice_tokens BEFORE INSERT OR UPDATE ON wordchoice_tokens FOR EACH ROW EXECUTE PROCEDURE calculate_extra_wordchoice_tokens();
+
 
 --
 -- PostgreSQL database dump complete
