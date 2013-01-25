@@ -20,18 +20,40 @@ describe("/api/wordchoices/term/:term", function(){
     ], done);
   });
 
-  it("should return a summary of how the word has been used over time", function(done){
-    request(helpers.url + '/api/wordchoices/term/api', function(err, res, body){
-      var json;
-      assert(!err);
-      assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
-      json = JSON.parse(body);
-      assert.equal(json.length, 1);
-      assert.equal(json[0].party, 'Liberal Party');
-      assert(json[0].week.toString().match('2012-41'));
-      assert(json[0].ids, 'test');
-      assert.equal(json[0].freq, 1);
-      done();
+  describe("with the term api", function(){
+
+    it("should return a summary of how the word has been used over time", function(done){
+      request(helpers.url + '/api/wordchoices/term/api', function(err, res, body){
+        var json;
+        assert(!err);
+        assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
+        json = JSON.parse(body);
+        assert.equal(json.length, 1);
+        assert.equal(json[0].party, 'Liberal Party');
+        assert(json[0].week.toString().match('2012-41'));
+        assert(json[0].ids, 'test');
+        assert.equal(json[0].freq, 1);
+        done();
+      });
+    });
+
+  });
+
+  describe("with the term Apis and complete match parameter passed", function(){
+
+    it("should return a summary of how the word has been used over time", function(done){
+      request(helpers.url + '/api/wordchoices/term/Apis?c=1', function(err, res, body){
+        var json;
+        assert(!err);
+        assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
+        json = JSON.parse(body);
+        assert.equal(json.length, 1);
+        assert.equal(json[0].party, 'Liberal Party');
+        assert(json[0].week.toString().match('2012-41'));
+        assert(json[0].ids, 'test1');
+        assert.equal(json[0].freq, 1);
+        done();
+      });
     });
 
   });
