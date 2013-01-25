@@ -1,5 +1,8 @@
 var app = {};
 
+var url = "";
+
+// TODO: style svg paths with css
 var parties = [
   {name: 'Australian Democrats', colour: '#fd8d3c'},
   {name: 'Australian Greens', colour: '#31a354'},
@@ -25,6 +28,7 @@ $(function(){
 
 function loadData(){
 
+  // Check the query string for up to four terms to do party lines for
   app.terms = [];
   app.complete = [];
   _.each(_.range(4), function(index){
@@ -39,13 +43,13 @@ function loadData(){
     }
   });
 
-  // TODO bulk load this perhaps
-  $.getJSON('http://localhost:8080/api/weeks', function(data){
+  // TODO bulk load this perhaps?
+  $.getJSON(url + '/api/weeks', function(data){
     app.weeks = data;
     app.weeksIndex = _.object(data, _.range(data.length));
 
     async.map(_.zip(app.terms, app.complete), function(termInfo, done){
-      $.getJSON('http://localhost:8080/api/wordchoices/term/' + termInfo[0], {c: termInfo[1]}, function(data){
+      $.getJSON(url + '/api/wordchoices/term/' + termInfo[0], {c: termInfo[1]}, function(data){
         done(null, data);
       });
     }, function(err, results){
@@ -84,6 +88,8 @@ function renderCharts(){
   });
 
   renderLegend();
+
+  renderSnippets();
 }
 
 function renderLegend(){
@@ -95,6 +101,71 @@ function renderLegend(){
       '</tr>'
     );
   });
+}
+
+function renderSnippets(){
+  var $week = $('#week');
+  $week.find('option').text('Choose a week');
+  var weekOptions = [];
+  _.each(app.weeks, function(week){
+    var weekOption = {ids: [], stats: {}};
+    var weekInfo = week.split('-');
+    _.each(app.data, function(termData){
+      _.each(termData, function(datum){
+        if (datum.week === week && datum.freq > 0){
+          weekOption.ids.push(datum.ids);
+          if (!weekOption.stats[datum.party]){
+            weekOption.stats[datum.party] = 0;
+          }
+          weekOption.stats[datum.party] += datum.freq;
+        }
+      });
+    });
+    var option = '';
+    if (weekOption.ids.length){
+      option += '<option value="' + weekOption.ids.join(',') + '">';
+      option += 'Week ' + weekInfo[1] + ' ' + weekInfo[0];
+      option += " - " + _(parties)
+        .map(function(party){
+          if (weekOption.stats[party.name]){
+            return party.name + ": " + weekOption.stats[party.name] + " mention" + (weekOption.stats[party.name] !== 1 ? 's' : '');
+          }else{
+            return;
+          }
+        })
+        .compact()
+        .value()
+        .join(', ');
+      option += '</option>';
+      $week.append(option);
+    }
+  });
+  $('#week').change(function(e){
+    e.preventDefault();
+    // From the series, get all the ids that match
+    var ids = $('#week').val();
+    if (!ids) return;
+    $.getJSON(url + '/api/hansards', {ids: ids}, function(json){
+      var html = '';
+      _.each(json, function(hansard){
+        html += '<div id="speech">';
+        html += '<h2>On ' + moment(hansard.date).format('DD/MM/YY HH:MM') + ' ' + hansard.speaker + ' said: </h2>';
+        var speech = hansard.html;
+        var partyData = _.detect(parties, function(party){ return party.name === hansard.party; });
+        speech = speech.replace(/<a.*?>(.*?)<\/a>/gim, '$1');
+        _.each(app.terms, function(term){
+          speech = speech.replace(RegExp('(' + term + ')', 'gmi'), '<span style="color: ' + (partyData ? partyData.colour : '#333333') + '" class="highlight ' + hansard.party.replace(' ', '-').toLowerCase() + '">$1</span>');
+        });
+        var highlightedParas = _.select(speech.split('</p>'), function(p){ return p.match(/class="highlight/m); });
+        _.each(highlightedParas, function(p){
+          html += '<blockquote>' + p + '</p></blockquote>';
+        });
+        html += '</div>';
+      });
+      $('#snippets').html(html);
+    });
+  });
+  $('#snippet-container').show();
 }
 
 function getURLParameter(name){

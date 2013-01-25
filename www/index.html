@@ -7,10 +7,6 @@
     <title>Multiple Area Charts with D3.js</title>
     <link rel="stylesheet" type="text/css" href="vendor/rickshaw/rickshaw.css" />
     <link rel="stylesheet" type="text/css" href="app.css" />
-    <script src="http://code.jquery.com/jquery-1.9.0.js"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/lodash.js/1.0.0-rc.3/lodash.js"></script>
-    <script src="d3.v3.js"></script>
-    <script src="vendor/async.min.js"></script>
   </head>
   <body>
     <div>
@@ -33,12 +29,28 @@
           <input type="submit" value="go!" />
         </form>
       </form>
-      <table id="legend" style="">
+
+      <table id="legend">
         <tbody></tbody>
       </table>
-      <div id="chart-container" style="float:left;"></div>
-      <div style="clear:both"></div>
+
+      <div id="chart-container"></div>
+
+      <div id="snippet-container">
+        <div class="form" id="snippet-form">
+          <em>Choose a week. In the future the will be updated with the slider</em>
+          <br />
+          <select id="week"><option>loading..</option></select>
+        </div>
+        <div id="snippets">
+        </div>
+      </div>
     </div>
+    <script src="vendor/jquery-1.9.0.js"></script>
+    <script src="vendor/moment.min.js"></script>
+    <script src="vendor/lodash.js"></script>
+    <script src="vendor/d3.v3.js"></script>
+    <script src="vendor/async.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

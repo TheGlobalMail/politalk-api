@@ -20,10 +20,11 @@ At 10am every day, `download.js` is run to check for new hansard data.
 
 ## Word Choices API
 
+* Release:
+  * test on IE before releasing
+  * try out fastly
 * add loading of snippets to mockup
 * add /api/weeks to cache
 * make sure common words don't return ridiculous results
-* add caseinsensitive search to exact match
-  * ensure lower index is everywhere
 * look at other stemmers that are less agressive
 * add cache layer or use fastly?
