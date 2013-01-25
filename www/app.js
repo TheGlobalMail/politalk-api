@@ -145,6 +145,7 @@ function renderSnippets(){
     // From the series, get all the ids that match
     var ids = $('#week').val();
     if (!ids) return;
+    $('#snippets').html('<p>Loading...</p>');
     $.getJSON(url + '/api/hansards', {ids: ids}, function(json){
       var html = '';
       _.each(json, function(hansard){
