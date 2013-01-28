@@ -116,7 +116,7 @@ function renderSnippets(){
     var weekOption = {ids: [], stats: {}};
     var weekInfo = week.split('-');
     _.each(app.data, function(termData){
-      _.each(termData, function(datum){
+      _.each(termData.data, function(datum){
         if (datum.week === week && datum.freq > 0){
           weekOption.ids.push(datum.ids);
           if (!weekOption.stats[datum.party]){
