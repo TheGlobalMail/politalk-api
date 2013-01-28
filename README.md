@@ -22,9 +22,12 @@ At 10am every day, `download.js` is run to check for new hansard data.
 
 * Release:
   * test on IE before releasing
-  * try out fastly
 * add loading of snippets to mockup
 * add /api/weeks to cache
 * make sure common words don't return ridiculous results
 * look at other stemmers that are less agressive
 * add cache layer or use fastly?
+* add app cache
+  * that can be rebuilt offline
+* log all requests and time
+* load test

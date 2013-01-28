@@ -80,10 +80,12 @@ function renderCharts(){
 
   _.each(app.terms, function(term, i){
     options.index = i;
-    if (!app.data[i].length){
+    if (app.data[i].message){
+      $('#chart-container').append('<strong style="margin-left:40px">' + app.data[i].message + ". Please try again and let us know if this message doesn't make sense.</strong><br />");
+    }else if (!app.data[i].data.length){
       $('#chart-container').append('<strong style="margin-left:40px">No mentions of ' + term + " found. Try again</strong><br />");
     }else{
-      renderChart(svg, options, term, app.data[i]);
+      renderChart(svg, options, term, app.data[i].data);
     }
   });
 
