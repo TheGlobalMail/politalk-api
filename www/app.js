@@ -48,11 +48,14 @@ function loadData(){
     app.weeks = data;
     app.weeksIndex = _.object(data, _.range(data.length));
 
+    $('#chart-container').append('<strong id="charts-loading" style="margin-left:40px">loading...</strong>');
+
     async.map(_.zip(app.terms, app.complete), function(termInfo, done){
       $.getJSON(url + '/api/wordchoices/term/' + termInfo[0], {c: termInfo[1]}, function(data){
         done(null, data);
       });
     }, function(err, results){
+      $('#charts-loading').remove();
       app.data = results;
       renderCharts();
     });
