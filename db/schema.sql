@@ -8,92 +8,24 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
-SET search_path = public, pg_catalog;
-
-drop trigger if exists extra_wordchoice_tokens ON public.wordchoice_tokens;
-drop trigger if exists extra_hansards ON public.hansards;
-drop index if exists public.wt_word1_idx;
-drop index if exists public.wt_word12_idx;
-drop index if exists public.wt_word123_idx;
-drop index if exists public.wt_week_idx;
-drop index if exists public.wt_token1_idx;
-drop index if exists public.wt_token12_idx;
-drop index if exists public.wt_token123_idx;
-drop index if exists public.wt_party_date_idx;
-drop index if exists public.wt_lower_word1_idx;
-drop index if exists public.wt_lower_word12_idx;
-drop index if exists public.text_idx;
-drop index if exists public.stem_idx;
-drop index if exists public.speaker_idx;
-drop index if exists public.pss_text_idx;
-drop index if exists public.pss_stem_idx;
-drop index if exists public.pss_speaker_id;
-drop index if exists public.pss_date_idx;
-drop index if exists public.psm_text_idx;
-drop index if exists public.psm_speaker_id;
-drop index if exists public.psm_date_idx;
-drop index if exists public.ps_text_idx;
-drop index if exists public.ps_stem_idx;
-drop index if exists public.ps_date_idx;
-drop index if exists public.pps_text_idx;
-drop index if exists public.pps_stem_idx;
-drop index if exists public.pps_person_id;
-drop index if exists public.pps_date_idx;
-drop index if exists public.pm_text_idx;
-drop index if exists public.pm_date_idx;
-drop index if exists public.phs_text_idx;
-drop index if exists public.phs_stem_idx;
-drop index if exists public.phs_party;
-drop index if exists public.phs_house;
-drop index if exists public.phs_date_idx;
-drop index if exists public.phm_text_idx;
-drop index if exists public.phm_party;
-drop index if exists public.phm_house;
-drop index if exists public.phm_date_idx;
-drop index if exists public.party_idx;
-drop index if exists public.partied_idx;
-drop index if exists public.ms_speaker_id;
-drop index if exists public.ms_durationx;
-drop index if exists public.ms_datex;
-drop index if exists public.house_idx;
-drop index if exists public.hansard_idx;
-drop index if exists public.duration_idx;
-drop index if exists public.datex;
-drop index if exists public.date_party_idx;
-drop index if exists public.date_idx;
-ALTER TABLE ONLY public.member DROP CONSTRAINT member_pkey;
-ALTER TABLE ONLY public.hansards DROP CONSTRAINT hansards_pkey;
-drop table if exists public.wordchoice_tokens;
-drop table if exists public.summaries;
-drop table if exists public.phrases_summaries;
-drop table if exists public.phrases_speaker_ids_summaries;
-drop table if exists public.phrases_speaker_ids_months;
-drop table if exists public.phrases_person_ids_summaries;
-drop table if exists public.phrases_months;
-drop table if exists public.phrases_houses_summaries;
-drop table if exists public.phrases_houses_months;
-drop table if exists public.phrases;
-drop table if exists public.member_summaries;
-drop table if exists public.member;
-drop table if exists public.hansards;
+DROP table if exists public.wordchoices_cache;
+DROP table if exists public.wordchoice_tokens;
+DROP table if exists public.summaries;
+DROP table if exists public.phrases_summaries;
+DROP table if exists public.phrases_speaker_ids_summaries;
+DROP table if exists public.phrases_speaker_ids_months;
+DROP table if exists public.phrases_person_ids_summaries;
+DROP table if exists public.phrases_months;
+DROP table if exists public.phrases_houses_summaries;
+DROP table if exists public.phrases_houses_months;
+DROP table if exists public.phrases;
+DROP table if exists public.member_summaries;
+DROP table if exists public.member;
+DROP table if exists public.hansards;
 drop function if exists public.countinstring(text, text, text);
 drop function if exists public.countinstring(text, text);
 drop function if exists public.calculate_extra_wordchoice_tokens();
 drop function if exists public.calculate_extra_hansards();
---
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
---
-
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
 --
@@ -360,6 +292,21 @@ CREATE TABLE wordchoice_tokens (
     party character varying(100) DEFAULT ''::character varying NOT NULL,
     date date NOT NULL,
     week character varying(7)
+);
+
+
+--
+-- Name: wordchoices_cache; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE wordchoices_cache (
+    term character varying(300) NOT NULL,
+    exactmatch boolean NOT NULL,
+    "time" timestamp without time zone NOT NULL,
+    requested integer NOT NULL,
+    toomany boolean NOT NULL,
+    resultcount integer NOT NULL,
+    data text NOT NULL
 );
 
 
@@ -650,6 +597,20 @@ CREATE INDEX stem_idx ON phrases USING btree (stem);
 --
 
 CREATE INDEX text_idx ON phrases USING btree (text);
+
+
+--
+-- Name: wordchoices_cache_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wordchoices_cache_idx ON wordchoices_cache USING btree (term, exactmatch);
+
+
+--
+-- Name: wt_lower_word123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wt_lower_word123_idx ON wordchoice_tokens USING btree (lower((word1)::text), lower((word2)::text), lower((word3)::text));
 
 
 --

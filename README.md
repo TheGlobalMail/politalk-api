@@ -20,9 +20,6 @@ At 10am every day, `download.js` is run to check for new hansard data.
 
 ## Word Choices API
 
-* Release:
-  * test on IE before releasing
-* add loading of snippets to mockup
 * add /api/weeks to cache
 * make sure common words don't return ridiculous results
 * look at other stemmers that are less agressive
@@ -31,3 +28,18 @@ At 10am every day, `download.js` is run to check for new hansard data.
   * that can be rebuilt offline
 * log all requests and time
 * load test
+
+## Done
+
+* Release:
+  * test on IE before releasing
+* add loading of snippets to mockup
+
+## Cache
+
+* upsert term request with counter
+  * can be used as stats
+* recalculation
+  * stream
+    * look at only the top 400 ordered by requests?
+    * loop over each and call for term and store results

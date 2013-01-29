@@ -103,6 +103,10 @@ exports.testApi = function(url, cb){
   });
 };
 
+exports.clearWordChoicesCache = function(cb){
+  db.query('delete from wordchoices_cache', cb);
+};
+
 exports.cleanup = function(){
   db.end();
 };

@@ -12,6 +12,7 @@ var keywords = require('./lib/keywords');
 var wordchoices = require('./lib/wordchoices');
 var dates = require('./lib/dates');
 var JSONStream = require('JSONStream');
+var jsonp = require('./lib/jsonp');
 var server;
 
 var KEYWORD_LIMIT = 5;
@@ -75,14 +76,14 @@ app.get('/api/weeks', function(req, res, next){
 });
 
 app.get('/api/wordchoices/term/:term', function(req, res, next){
-  if (!req.params.term) return res.json([]);
-  wordchoices.forTerm(req.params.term, req.query.c, function(err, results){
+  var term = req.params.term && req.params.term.toLowerCase();
+  var exactMatch = req.query.c;
+  if (!term) return res.json([]);
+
+  wordchoices.forTerm(term, exactMatch, function(err, results){
     if (err) return next(err);
-    if (req.query.callback){
-      res.send(req.query.callback + "(" + JSON.stringify(results) + ");");
-    }else{
-      res.json(results);
-    }
+    jsonp.send(req, res, results);
+    cache.cacheWordchoices(term, exactMatch, results, function(){});
   });
 });
 
