@@ -1,1 +1,1 @@
-insert into summaries (time, keywords, members, dates, version) values (current_timestamp, '[]', '[]', '[]', 0);
+insert into summaries (time, keywords, members, dates, weeks, version) values (current_timestamp, '[]', '[]', '[]', '[]', 0);

@@ -5,6 +5,7 @@ CREATE TABLE summaries (
   keywords text DEFAULT NULL,
   members text DEFAULT NULL,
   dates text DEFAULT NULL,
+  weeks text DEFAULT NULL,
   version integer
 );
 commit;

@@ -272,6 +272,7 @@ CREATE TABLE summaries (
     "time" timestamp without time zone,
     members text,
     keywords text,
+    weeks text,
     dates text,
     version integer DEFAULT 0
 );
