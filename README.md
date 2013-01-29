@@ -24,22 +24,14 @@ At 10am every day, `download.js` is run to check for new hansard data.
 * make sure common words don't return ridiculous results
 * look at other stemmers that are less agressive
 * add cache layer or use fastly?
-* add app cache
   * that can be rebuilt offline
-* log all requests and time
 * load test
+* rebuild cache
+* log all requests and time
 
 ## Done
 
 * Release:
   * test on IE before releasing
 * add loading of snippets to mockup
-
-## Cache
-
-* upsert term request with counter
-  * can be used as stats
-* recalculation
-  * stream
-    * look at only the top 400 ordered by requests?
-    * loop over each and call for term and store results
+* add app cache

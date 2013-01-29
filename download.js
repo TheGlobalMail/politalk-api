@@ -67,6 +67,7 @@ workOutDateToRequest(function(err, from){
         .pipe(wordchoices.createIndexStream())
         .pipe(query.createStream('db/analyze.sql'))
         .pipe(cache.rebuildStream())
+        .pipe(cache.rebuildCacheStream())
         .on('end', cb)
         .on('error', function(err){ cb(err); });
     }
