@@ -33,17 +33,11 @@ describe("wordchoices.createIndexStream", function(){
     it("should index records for each word in the hansard text", function(done){
       var stream = wordchoices.createIndexStream(); 
       stream.on('end', function(){
-        var query = 'select * from wordchoice_tokens where hansard_id = $1';
-        db.query(query, [hansardRecord.id], function(err, result){
-          var words = hansardRecord.stripped_html.split(' ');
-          words = _.reject(words, function(word){
-            return word === 'and' || !word;
-          });
-          assert.equal(words.length, result.rowCount);
+        var query = 'select * from wordchoice_tokens_cluster_p where hansard_id = $1 ' + 
+          'and word1 = $2 and word2 = $3 and word3 = $4';
+        db.query(query, [hansardRecord.id, 'politalk', 'api', 'and'], function(err, result){
+          assert.equal(12, result.rowCount);
           var indexRow = result.rows[0];
-          assert.equal(words[0], indexRow.word1);
-          assert.equal(words[1], indexRow.word2);
-          assert.equal('and', indexRow.word3);
           assert.equal(hansardRecord.party, indexRow.party);
           assert.equal('2012-41', indexRow.week);
           db.end();

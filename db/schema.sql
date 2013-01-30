@@ -22,6 +22,8 @@ DROP table if exists public.phrases;
 DROP table if exists public.member_summaries;
 DROP table if exists public.member;
 DROP table if exists public.hansards;
+drop table if exists wordchoice_tokens_cluster_a;
+drop table if exists wordchoice_tokens_cluster_p;
 drop function if exists public.countinstring(text, text, text);
 drop function if exists public.countinstring(text, text);
 drop function if exists public.calculate_extra_wordchoice_tokens();
@@ -698,7 +700,195 @@ CREATE TRIGGER extra_hansards BEFORE INSERT OR UPDATE ON hansards FOR EACH ROW E
 CREATE TRIGGER extra_wordchoice_tokens BEFORE INSERT OR UPDATE ON wordchoice_tokens FOR EACH ROW EXECUTE PROCEDURE calculate_extra_wordchoice_tokens();
 
 
+
+CREATE TABLE wordchoice_tokens_cluster_a (
+    word1 character varying(100),
+    token1 character varying(100),
+    word2 character varying(100),
+    token2 character varying(100),
+    word3 character varying(100),
+    token3 character varying(100),
+    hansard_id character varying(26) DEFAULT NULL::character varying NOT NULL,
+    party character varying(100) DEFAULT ''::character varying NOT NULL,
+    date date NOT NULL,
+    week character varying(7)
+);
+
+
 --
--- PostgreSQL database dump complete
+-- Name: wta_lower_word123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
+CREATE INDEX wta_lower_word123_idx ON wordchoice_tokens_cluster_a USING btree (lower((word1)::text), lower((word2)::text), lower((word3)::text));
+
+
+--
+-- Name: wta_lower_word12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_lower_word12_idx ON wordchoice_tokens_cluster_a USING btree (lower((word1)::text), lower((word2)::text));
+
+
+--
+-- Name: wta_lower_word1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_lower_word1_idx ON wordchoice_tokens_cluster_a USING btree (lower((word1)::text));
+
+
+--
+-- Name: wta_party_date_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_party_date_idx ON wordchoice_tokens_cluster_a USING btree (party, date);
+
+
+--
+-- Name: wta_token123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_token123_idx ON wordchoice_tokens_cluster_a USING btree (token1, token2, token3);
+
+
+--
+-- Name: wta_token12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_token12_idx ON wordchoice_tokens_cluster_a USING btree (token1, token2);
+
+
+--
+-- Name: wta_token1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_token1_idx ON wordchoice_tokens_cluster_a USING btree (token1);
+
+
+--
+-- Name: wta_week_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_week_idx ON wordchoice_tokens_cluster_a USING btree (week);
+
+
+--
+-- Name: wta_word123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_word123_idx ON wordchoice_tokens_cluster_a USING btree (word1, word2, word3);
+
+
+--
+-- Name: wta_word12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_word12_idx ON wordchoice_tokens_cluster_a USING btree (word1, word2);
+
+
+--
+-- Name: wta_word1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wta_word1_idx ON wordchoice_tokens_cluster_a USING btree (word1);
+
+--
+-- Name: extra_wordchoice_tokens_cluster_a; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER extra_wordchoice_tokens_cluster_a BEFORE INSERT OR UPDATE ON wordchoice_tokens_cluster_a FOR EACH ROW EXECUTE PROCEDURE calculate_extra_wordchoice_tokens();
+
+CREATE TABLE wordchoice_tokens_cluster_p (
+    word1 character varying(100),
+    token1 character varying(100),
+    word2 character varying(100),
+    token2 character varying(100),
+    word3 character varying(100),
+    token3 character varying(100),
+    hansard_id character varying(26) DEFAULT NULL::character varying NOT NULL,
+    party character varying(100) DEFAULT ''::character varying NOT NULL,
+    date date NOT NULL,
+    week character varying(7)
+);
+
+
+--
+-- Name: wtp_lower_word123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_lower_word123_idx ON wordchoice_tokens_cluster_p USING btree (lower((word1)::text), lower((word2)::text), lower((word3)::text));
+
+
+--
+-- Name: wtp_lower_word12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_lower_word12_idx ON wordchoice_tokens_cluster_p USING btree (lower((word1)::text), lower((word2)::text));
+
+
+--
+-- Name: wtp_lower_word1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_lower_word1_idx ON wordchoice_tokens_cluster_p USING btree (lower((word1)::text));
+
+
+--
+-- Name: wtp_party_date_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_party_date_idx ON wordchoice_tokens_cluster_p USING btree (party, date);
+
+
+--
+-- Name: wtp_token123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_token123_idx ON wordchoice_tokens_cluster_p USING btree (token1, token2, token3);
+
+
+--
+-- Name: wtp_token12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_token12_idx ON wordchoice_tokens_cluster_p USING btree (token1, token2);
+
+
+--
+-- Name: wtp_token1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_token1_idx ON wordchoice_tokens_cluster_p USING btree (token1);
+
+
+--
+-- Name: wtp_week_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_week_idx ON wordchoice_tokens_cluster_p USING btree (week);
+
+
+--
+-- Name: wtp_word123_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_word123_idx ON wordchoice_tokens_cluster_p USING btree (word1, word2, word3);
+
+
+--
+-- Name: wtp_word12_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_word12_idx ON wordchoice_tokens_cluster_p USING btree (word1, word2);
+
+
+--
+-- Name: wtp_word1_idx; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX wtp_word1_idx ON wordchoice_tokens_cluster_p USING btree (word1);
+
+--
+-- Name: extra_wordchoice_tokens_cluster_p; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER extra_wordchoice_tokens_cluster_p BEFORE INSERT OR UPDATE ON wordchoice_tokens_cluster_p FOR EACH ROW EXECUTE PROCEDURE calculate_extra_wordchoice_tokens();
