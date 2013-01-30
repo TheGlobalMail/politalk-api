@@ -35,6 +35,7 @@ app.configure(function(){
   app.use(express.responseTime()); 
   app.use(cors);
   app.use(express.compress());
+  app.use(express.bodyParser());
   app.use(cache.middleware());
   app.use(app.router);
   if (metrics.nodetime){
@@ -87,10 +88,10 @@ app.get('/api/wordchoices/term/:term', function(req, res, next){
   });
 });
 
-app.get('/api/hansards', function(req, res, next){
-  if (!req.query.ids)
-    return next('No ids supplied');
-  hansard.createStream(req.query.ids)
+app.all('/api/hansards', function(req, res, next){
+  var ids = req.param('ids');
+  if (!ids) return next('No ids supplied');
+  hansard.createStream(ids)
     .pipe(JSONStream.stringify())
     .pipe(res);
 });

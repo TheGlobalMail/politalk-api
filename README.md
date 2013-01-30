@@ -23,3 +23,5 @@ At 10am every day, `download.js` is run to check for new hansard data.
 * make sure common words don't return ridiculous results
 * look at other stemmers that are less agressive
 * load test
+* cluster
+* yaxis

@@ -151,24 +151,31 @@ function renderSnippets(){
     var ids = $('#week').val();
     if (!ids) return;
     $('#snippets').html('<p>Loading...</p>');
-    $.getJSON(url + '/api/hansards', {ids: ids}, function(json){
-      var html = '';
-      _.each(json, function(hansard){
-        html += '<div id="speech">';
-        html += '<h2>On ' + moment(hansard.date).format('DD/MM/YY HH:MM') + ' ' + hansard.speaker + ' said: </h2>';
-        var speech = hansard.html;
-        var partyData = _.detect(parties, function(party){ return party.name === hansard.party; });
-        speech = speech.replace(/<a.*?>(.*?)<\/a>/gim, '$1');
-        _.each(app.terms, function(term){
-          speech = speech.replace(RegExp('(' + term + ')', 'gmi'), '<span style="color: ' + (partyData ? partyData.colour : '#333333') + '" class="highlight ' + hansard.party.replace(' ', '-').toLowerCase() + '">$1</span>');
+    var endpoint = url + '/api/hansards';
+    $.ajax(endpoint, {
+      data : JSON.stringify({ids: ids}),
+      contentType : 'application/json',
+      type : 'POST',
+      dataType: 'json',
+      success: function(json){
+        var html = '';
+        _.each(json, function(hansard){
+          html += '<div id="speech">';
+          html += '<h2>On ' + moment(hansard.date).format('DD/MM/YY HH:MM') + ' ' + hansard.speaker + ' said: </h2>';
+          var speech = hansard.html;
+          var partyData = _.detect(parties, function(party){ return party.name === hansard.party; });
+          speech = speech.replace(/<a.*?>(.*?)<\/a>/gim, '$1');
+          _.each(app.terms, function(term){
+            speech = speech.replace(RegExp('(' + term + ')', 'gmi'), '<span style="color: ' + (partyData ? partyData.colour : '#333333') + '" class="highlight ' + hansard.party.replace(' ', '-').toLowerCase() + '">$1</span>');
+          });
+          var highlightedParas = _.select(speech.split('</p>'), function(p){ return p.match(/class="highlight/m); });
+          _.each(highlightedParas, function(p){
+            html += '<blockquote>' + p + '</p></blockquote>';
+          });
+          html += '</div>';
         });
-        var highlightedParas = _.select(speech.split('</p>'), function(p){ return p.match(/class="highlight/m); });
-        _.each(highlightedParas, function(p){
-          html += '<blockquote>' + p + '</p></blockquote>';
-        });
-        html += '</div>';
-      });
-      $('#snippets').html(html);
+        $('#snippets').html(html);
+      }
     });
   });
   $('#snippet-container').show();
