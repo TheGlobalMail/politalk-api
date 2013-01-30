@@ -14,6 +14,7 @@ CREATE TABLE member_summaries (
   person_id integer DEFAULT 0 NOT NULL,
   house integer DEFAULT NULL,
   party varchar(100) DEFAULT NULL,
+  constituency character varying(100) DEFAULT ''::character varying NOT NULL,
   interjections integer DEFAULT 0,
   speeches integer DEFAULT 0,
   words integer DEFAULT 0,
@@ -23,18 +24,18 @@ CREATE TABLE member_summaries (
 
 insert into member_summaries(duration, speaker, first_name, last_name, speaker_id, 
   person_id, party, interjections, speeches, house, words, total, image, 
-  entered_house, left_house, left_reason, date)
+  entered_house, left_house, left_reason, date, constituency)
 select sum(duration) as duration, speaker, first_name, 
 last_name, speaker_id, person_id, member.party, 
 sum(case when (talktype='interjection') then 1 else 0 end) as interjections,
 sum(case when (talktype='speech') then 1 else 0 end) as speeches,
 house, sum(words) as words, count(*) as total, image,
-entered_house, left_house, left_reason, date
+entered_house, left_house, left_reason, date, constituency
 from hansards
 inner join member on member.member_id = speaker_id
-group by speaker_id,speaker,person_id,member.party,house,first_name,last_name,image,entered_house,left_house,left_reason,date;
+group by speaker_id,speaker,person_id,member.party,house,first_name,last_name,image,entered_house,left_house,left_reason,date,constituency;
 
-create index ms_speaker_id on member_summaries(speaker_id, speaker, person_id, party, house, first_name, last_name, image, entered_house, left_house, left_reason);
+create index ms_speaker_id on member_summaries(speaker_id, speaker, person_id, party, house, first_name, last_name, image, entered_house, left_house, left_reason, constituency);
 create index ms_durationx on member_summaries(duration);
 create index ms_datex on member_summaries(date);
 

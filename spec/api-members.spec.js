@@ -28,6 +28,7 @@ describe("/api/members", function(){
       assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
       json = JSON.parse(body);
       assert.equal(json[0].speaker, 'John Howard');
+      assert.equal(json[0].url, 'http://www.openaustralia.org/mp/john_howard/bennelong');
       done();
     });
   });
