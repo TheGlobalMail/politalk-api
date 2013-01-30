@@ -166,7 +166,7 @@ function renderSnippets(){
           var partyData = _.detect(parties, function(party){ return party.name === hansard.party; });
           speech = speech.replace(/<a.*?>(.*?)<\/a>/gim, '$1');
           _.each(app.terms, function(term){
-            speech = speech.replace(RegExp('(' + term + ')', 'gmi'), '<span style="color: ' + (partyData ? partyData.colour : '#333333') + '" class="highlight ' + hansard.party.replace(' ', '-').toLowerCase() + '">$1</span>');
+            speech = speech.replace(RegExp('^|[^a-zA-Z](' + term + ')[^a-zA-Z]|$', 'gmi'), '<span style="color: ' + (partyData ? partyData.colour : '#333333') + '" class="highlight ' + hansard.party.replace(' ', '-').toLowerCase() + '">$1</span>');
           });
           var highlightedParas = _.select(speech.split('</p>'), function(p){ return p.match(/class="highlight/m); });
           _.each(highlightedParas, function(p){

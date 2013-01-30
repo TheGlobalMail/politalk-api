@@ -1,10 +1,12 @@
 # Politalk API
 
-There are currently three endpoints: 
+Provides the following endpoints:
 
 * `/api/members`
 * `/api/keywords`
 * `/api/dates`
+* `/api/wordchoices/term/:term`
+* `/api/hansards`
 
 The api supports CORS. We might add JSONp at some point.
 
@@ -23,5 +25,7 @@ At 10am every day, `download.js` is run to check for new hansard data.
 * make sure common words don't return ridiculous results
 * look at other stemmers that are less agressive
 * load test
-* cluster
 * yaxis
+* offline calculation should use a different limit
+* manual cluster by start letter
+  * select into new table
