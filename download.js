@@ -65,9 +65,10 @@ workOutDateToRequest(function(err, from){
         .pipe(query.createStream('db/phrases_summaries.sql'))
         .pipe(query.createStream('db/member_summaries.sql'))
         .pipe(wordchoices.createIndexStream())
-        .pipe(query.createStream('db/analyze.sql'))
         .pipe(cache.rebuildStream())
         .pipe(cache.rebuildCacheStream())
+        .pipe(query.createStream('db/vacuum.sql'))
+        .pipe(query.createStream('db/analyze.sql'))
         .on('end', cb)
         .on('error', function(err){ cb(err); });
     }

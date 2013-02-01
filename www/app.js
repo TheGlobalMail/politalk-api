@@ -95,6 +95,8 @@ function renderCharts(){
   renderLegend();
 
   renderSnippets();
+
+  renderSlider(svg);
 }
 
 function renderLegend(){
@@ -323,3 +325,27 @@ Chart.prototype.renderTitle = function(){
     .attr("transform", "translate(15,15)")
     .text(this.options.term);
 };
+
+function renderSlider(){
+  $chartContainer = $('#chart-container');
+  var slider = { active: false };
+
+  slider.el = document.createElement('div');
+	slider.el.className = 'slider';
+  slider.el.style.width = '10px;' // need to map this to the actual tick widths
+
+  console.error($chartContainer);
+  $chartContainer.on('click', function(e){
+    if (!slider.active){
+      console.error('active');
+    }else{
+      console.error('inactive');
+    }
+    slider.active = !slider.active;
+  });
+  $chartContainer.on('mouseover', function(e){
+    if (slider.active){
+      console.error('moving');
+    }
+  });
+}

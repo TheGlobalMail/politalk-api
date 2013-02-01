@@ -20,12 +20,12 @@ Call to view various configuration variables `heroku config`.
 
 At 10am every day, `download.js` is run to check for new hansard data.
 
-## Word Choices API
+## TODO before launch
 
-* make sure common words don't return ridiculous results
 * look at other stemmers that are less agressive
 * load test
 * yaxis
-* offline calculation should use a different limit
-* manual cluster by start letter
-  * select into new table
+* host partylines on cdn
+* run 2012
+* host bubleheads on cdn
+* up the dynos for launch
