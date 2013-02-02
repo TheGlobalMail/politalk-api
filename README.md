@@ -26,6 +26,8 @@ At 10am every day, `download.js` is run to check for new hansard data.
 * load test
 * yaxis
 * host partylines on cdn
-* run 2012-11-29
+* check 2012-11-29 
+* check snippet counts match
 * host bubleheads on cdn
 * up the dynos for launch
+* compress /api/hansards to get it into a get
