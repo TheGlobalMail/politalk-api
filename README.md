@@ -25,9 +25,8 @@ At 10am every day, `download.js` is run to check for new hansard data.
 * look at other stemmers that are less agressive
 * load test
 * yaxis
-* host partylines on cdn
-* check 2012-11-29 
-* check snippet counts match
-* host bubleheads on cdn
 * up the dynos for launch
 * compress /api/hansards to get it into a get
+* only return snippets from server
+* switch to jsonp
+  * what limitations on get
