@@ -30,6 +30,8 @@ var cors = function(req, res, next) {
   next();
 };
 
+app.enable('jsonp callback');
+
 app.configure(function(){
   app.use(express.responseTime()); 
   app.use(cors);
@@ -81,7 +83,7 @@ app.get('/api/wordchoices/term/:term', function(req, res, next){
 
   wordchoices.forTerm(term, exactMatch, function(err, results){
     if (err) return next(err);
-    jsonp.send(req, res, results);
+    res.json(results);
     cache.cacheWordchoices(term, exactMatch, results, function(){});
   });
 });
@@ -89,9 +91,10 @@ app.get('/api/wordchoices/term/:term', function(req, res, next){
 app.all('/api/hansards', function(req, res, next){
   var ids = req.param('ids');
   if (!ids) return next('No ids supplied');
-  hansard.createStream(ids)
-    .pipe(JSONStream.stringify())
-    .pipe(res);
+  hansard.find(ids, function(err, results){
+    if (err) return next(err);
+    res.json(results.rows);
+  });
 });
 
 module.exports = app;
