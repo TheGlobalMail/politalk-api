@@ -1,7 +1,6 @@
 var metrics = require('./lib/metrics');
 var express = require('express');
 var app = express();
-var web = process.argv[2] || 'dist';
 var async = require('async');
 var _ = require('lodash');
 var db = require('./lib/db');
@@ -45,7 +44,6 @@ app.configure(function(){
   if (process.env.NODE_ENV === 'deliver'){
     app.use(express.basicAuth(authorize));
   }
-  app.use(express.static(__dirname + '/www'));
 });
 
 app.get('/api/members', function(req, res, next){
@@ -94,10 +92,6 @@ app.all('/api/hansards', function(req, res, next){
   hansard.createStream(ids)
     .pipe(JSONStream.stringify())
     .pipe(res);
-});
-
-app.get('/api/die', function(req, res, next){
-  sdfsd();
 });
 
 module.exports = app;
