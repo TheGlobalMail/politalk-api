@@ -22,14 +22,8 @@ At 10am every day, `download.js` is run to check for new hansard data.
 
 ## TODO before launch
 
-* look at other stemmers that are less agressive
 * load test
-* yaxis
-* up the dynos for launch
+
 * compress /api/hansards to get it into a get
 * only return snippets from server
-* switch to jsonp
-  * what limitations on get
-* test
-* separate apps
-* experiment with lower threshold
+* slave db following
