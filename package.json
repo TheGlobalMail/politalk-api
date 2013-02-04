@@ -24,7 +24,8 @@
     "json-stream": "~0.1.0",
     "gramophone": "~0.0.2",
     "csv": "~0.2.6",
-    "elasticsearchclient": "~0.2.2"
+    "elasticsearchclient": "~0.2.2",
+    "nodeload": "~0.4.0"
   },
   "devDependencies": {
     "mocha": "~1.6.0",
