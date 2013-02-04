@@ -30,8 +30,6 @@ var cors = function(req, res, next) {
   next();
 };
 
-app.enable('jsonp callback');
-
 app.configure(function(){
   app.use(express.responseTime()); 
   app.use(cors);
@@ -60,28 +58,28 @@ app.get('/api/members/year', function(req, res, next){
 app.get('/api/members', function(req, res, next){
   members.find(req.query.from, req.query.to, function(err, members){
     if (err) return next(err);
-    res.json(members);
+    jsonp.send(req, res, members);
   });
 });
 
 app.get('/api/keywords', function(req, res, next){
   keywords.find(req.query, function(err, keywords) {
     if (err) return next(err);
-    res.json(keywords);
+    jsonp.send(req, res, keywords);
   });
 });
 
 app.get('/api/dates', function(req, res, next){
   dates.find(function(err, dates) {
     if (err) return next(err);
-    res.json(dates);
+    jsonp.send(req, res, dates);
   });
 });
 
 app.get('/api/weeks', function(req, res, next){
   dates.weeks(function(err, weeks) {
     if (err) return next(err);
-    res.json(weeks);
+    jsonp.send(req, res, weeks);
   });
 });
 
@@ -92,7 +90,7 @@ app.get('/api/wordchoices/term/:term', function(req, res, next){
 
   wordchoices.forTerm(term, exactMatch, function(err, results){
     if (err) return next(err);
-    res.json(results);
+    jsonp.send(req, res, results);
     cache.cacheWordchoices(term, exactMatch, results, function(){});
   });
 });
@@ -100,10 +98,31 @@ app.get('/api/wordchoices/term/:term', function(req, res, next){
 app.all('/api/hansards', function(req, res, next){
   var ids = req.param('ids');
   if (!ids) return next('No ids supplied');
-  hansard.find(ids, function(err, results){
-    if (err) return next(err);
-    res.json(results.rows);
-  });
+  var stream = hansard.createStream(ids);
+  if (req.query.callback){
+    res.set('content-type', 'application/javascript');
+    res.write(req.query.callback + '([');
+    var first = true;
+    stream.on('data', function(record){
+      var json = JSON.stringify(record);
+      if (!first){
+        json = ", " + json;
+      }
+      first = false;
+      res.write(json);
+    });
+    stream.on('end', function(){
+      res.write(']);');
+      res.end(); 
+    });
+    stream.on('error', function(err){
+      next(err);
+    });
+  }else{
+    stream 
+      .pipe(JSONStream.stringify())
+      .pipe(res);
+  }
 });
 
 module.exports = app;
