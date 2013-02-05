@@ -22,7 +22,7 @@ describe("/api/wordchoices/term/:term", function(){
     ], done);
   });
 
-  describe("with the term api", function(){
+  describe("with the term 'api'", function(){
 
     it("should return a summary of how the word has been used over time", function(done){
       request(helpers.url + '/api/wordchoices/term/api', function(err, res, body){

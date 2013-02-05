@@ -33,7 +33,7 @@ describe("wordchoices.createIndexStream", function(){
     it("should index records for each word in the hansard text", function(done){
       var stream = wordchoices.createIndexStream(); 
       stream.on('end', function(){
-        var query = 'select * from wordchoice_tokens_cluster_p where hansard_id = $1 ' + 
+        var query = 'select * from wordchoice_tokens_cluster_po where hansard_id = $1 ' + 
           'and word1 = $2 and word2 = $3 and word3 = $4';
         db.query(query, [hansardRecord.id, 'politalk', 'api', 'and'], function(err, result){
           assert.equal(12, result.rowCount);

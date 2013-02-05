@@ -1,5 +1,5 @@
-drop table  if exists wordchoice_tokens_cluster_a;
-CREATE TABLE wordchoice_tokens_cluster_a (
+drop table  if exists wordchoice_tokens_cluster_ap;
+CREATE TABLE wordchoice_tokens_cluster_ap (
     word1 varchar(100),
     token1 varchar(100),
     word2 varchar(100),
@@ -19,16 +19,16 @@ BEGIN
 END;
 ' LANGUAGE plpgsql;
 
-DROP TRIGGER if exists extra_wordchoice_tokens on wordchoice_tokens;
+DROP TRIGGER if exists extra_wordchoice_tokens on wordchoice_tokens_cluster_ap;
 CREATE TRIGGER extra_wordchoice_tokens BEFORE INSERT OR UPDATE
-ON wordchoice_tokens_cluster_a FOR EACH ROW
+ON wordchoice_tokens_cluster_ap FOR EACH ROW
 EXECUTE PROCEDURE calculate_extra_wordchoice_tokens ();
 
-CREATE INDEX wta_party_date_idx ON wordchoice_tokens_cluster_a USING btree (party, date);
-CREATE INDEX wta_token1_idx ON wordchoice_tokens_cluster_a USING btree (token1);
-CREATE INDEX wta_token12_idx ON wordchoice_tokens_cluster_a USING btree (token1, token2);
-CREATE INDEX wta_token123_idx ON wordchoice_tokens_cluster_a USING btree (token1, token2, token3);
-CREATE INDEX wta_word1_idx ON wordchoice_tokens_cluster_a USING btree (word1);
-CREATE INDEX wta_word12_idx ON wordchoice_tokens_cluster_a USING btree (word1, word2);
-CREATE INDEX wta_word123_idx ON wordchoice_tokens_cluster_a USING btree (word1, word2, word3);
-CREATE INDEX wta_week_idx ON wordchoice_tokens_cluster_a USING btree (week);
+CREATE INDEX wtap_party_date_idx ON wordchoice_tokens_cluster_ap USING btree (party, date);
+CREATE INDEX wtap_token1_idx ON wordchoice_tokens_cluster_ap USING btree (token1);
+CREATE INDEX wtap_token12_idx ON wordchoice_tokens_cluster_ap USING btree (token1, token2);
+CREATE INDEX wtap_token123_idx ON wordchoice_tokens_cluster_ap USING btree (token1, token2, token3);
+CREATE INDEX wtap_word1_idx ON wordchoice_tokens_cluster_ap USING btree (word1);
+CREATE INDEX wtap_word12_idx ON wordchoice_tokens_cluster_ap USING btree (word1, word2);
+CREATE INDEX wtap_word123_idx ON wordchoice_tokens_cluster_ap USING btree (word1, word2, word3);
+CREATE INDEX wtap_week_idx ON wordchoice_tokens_cluster_ap USING btree (week);
