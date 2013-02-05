@@ -9,11 +9,10 @@ var util = require('util');
 console.log("Running test on " + server);
 
 function membersApi(cb, client){
-  var rand = Math.floor((Math.random()*10)+1);
-  var url = 'http://' + server + "/api/members?";
-  if (rand < 2){
-    url += 'from=2011-01-01&to=2011-12-31&';
-  }
+  var pad = '00';
+  var rand = Math.floor((Math.random()*7)+1).toString();
+  var url = 'http://' + server + "/api/members/year?";
+  url += 'from=20' + pad.substring(0, pad.length - rand.length) + rand + '-01-01&';
   url += 'callback=test';
   
   req = request({method: 'GET', url: url}, function(err, res, body){
