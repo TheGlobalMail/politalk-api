@@ -48,6 +48,15 @@ app.configure(function(){
   }
 });
 
+app.get('/api/members/year', function(req, res, next){
+  var year = dates.getFrom(req.query.from);
+  if (!year) res.json([]);
+  members.findByYear(year, function(err, members){
+    if (err) return next(err);
+    res.json(members);
+  });
+});
+
 app.get('/api/members', function(req, res, next){
   members.find(req.query.from, req.query.to, function(err, members){
     if (err) return next(err);

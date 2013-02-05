@@ -22,8 +22,14 @@ At 10am every day, `download.js` is run to check for new hansard data.
 
 ## TODO before launch
 
+* get api/members loading from db
 * load test
+* slave db following
+* send email
 
+## Partylines
+
+* breakdown tables even further
+* fix "lie"??
 * compress /api/hansards to get it into a get
 * only return snippets from server
-* slave db following

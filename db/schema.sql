@@ -892,3 +892,12 @@ CREATE INDEX wtp_word1_idx ON wordchoice_tokens_cluster_p USING btree (word1);
 --
 
 CREATE TRIGGER extra_wordchoice_tokens_cluster_p BEFORE INSERT OR UPDATE ON wordchoice_tokens_cluster_p FOR EACH ROW EXECUTE PROCEDURE calculate_extra_wordchoice_tokens();
+
+drop table if exists members_by_year_cache;
+CREATE TABLE members_by_year_cache (
+    year varchar(4) NOT NULL,
+    lastupdate timestamp without time zone DEFAULT now() NOT NULL,
+    data text 
+);
+
+CREATE INDEX members_cache_year_idx ON members_by_year_cache USING btree (year);

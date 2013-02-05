@@ -4,6 +4,7 @@ var Hansard = require('../lib/hansard');
 var request = require('request');
 var assert = require('assert');
 var _ = require('lodash');
+var cache = require('../lib/cache');
 
 var testsRunning = 0;
 var port = 8085;
@@ -76,6 +77,16 @@ exports.calculatePhraseSummaries = function(cb){
 exports.calculateSummary = function(cb){
   var query = fs.readFileSync(__dirname + '/../db/summary.sql').toString();
   db.query(query, cb);
+};
+
+exports.rebuildMembersCache = function(cb){
+  var stream = cache.rebuildMembersCache(); 
+  stream.on('end', function(){
+    cb();
+  });
+  stream.write({});
+  stream.on('error', function(err){ return cb(err); });
+  stream.end();
 };
 
 exports.loadSummaryFixture = function(cb){
