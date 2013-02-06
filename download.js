@@ -86,8 +86,6 @@ workOutDateToRequest(function(err, from){
           .pipe(query.createStream('db/member_summaries.sql'))
           .pipe(cache.rebuildStream())
           .pipe(cache.rebuildMembersCache())
-          .pipe(query.createStream('db/vacuum.sql'))
-          .pipe(query.createStream('db/analyze.sql'))
           .on('end', cb)
           .on('error', function(err){ cb(err); });
       }
