@@ -83,47 +83,49 @@ app.get('/api/weeks', function(req, res, next){
   });
 });
 
-app.get('/api/wordchoices/term/:term', function(req, res, next){
-  var term = req.params.term && req.params.term.toLowerCase();
-  var exactMatch = req.query.c;
-  if (!term) return res.json([]);
+if (process.env.ENABLE_WORDCHOICES || process.env.NODE_ENV === 'test'){
+  app.get('/api/wordchoices/term/:term', function(req, res, next){
+    var term = req.params.term && req.params.term.toLowerCase();
+    var exactMatch = req.query.c;
+    if (!term) return res.json([]);
 
-  wordchoices.forTerm(term, exactMatch, function(err, results){
-    if (err) return next(err);
-    jsonp.send(req, res, results);
-    cache.cacheWordchoices(term, exactMatch, results, function(){});
+    wordchoices.forTerm(term, exactMatch, function(err, results){
+      if (err) return next(err);
+      jsonp.send(req, res, results);
+      cache.cacheWordchoices(term, exactMatch, results, function(){});
+    });
   });
-});
 
-app.all('/api/hansards', function(req, res, next){
-  var ids = req.param('ids');
-  if (!ids) return next('No ids supplied');
-  var stream = hansard.createStream(ids);
-  if (req.query.callback){
-    res.set('content-type', 'application/javascript');
-    res.write(req.query.callback + '([');
-    var first = true;
-    stream.on('data', function(record){
-      var json = JSON.stringify(record);
-      if (!first){
-        json = ", " + json;
-      }
-      first = false;
-      res.write(json);
-    });
-    stream.on('end', function(){
-      res.write(']);');
-      res.end(); 
-    });
-    stream.on('error', function(err){
-      next(err);
-    });
-  }else{
-    stream 
-      .pipe(JSONStream.stringify())
-      .pipe(res);
-  }
-});
+  app.all('/api/hansards', function(req, res, next){
+    var ids = req.param('ids');
+    if (!ids) return next('No ids supplied');
+    var stream = hansard.createStream(ids);
+    if (req.query.callback){
+      res.set('content-type', 'application/javascript');
+      res.write(req.query.callback + '([');
+      var first = true;
+      stream.on('data', function(record){
+        var json = JSON.stringify(record);
+        if (!first){
+          json = ", " + json;
+        }
+        first = false;
+        res.write(json);
+      });
+      stream.on('end', function(){
+        res.write(']);');
+        res.end(); 
+      });
+      stream.on('error', function(err){
+        next(err);
+      });
+    }else{
+      stream 
+        .pipe(JSONStream.stringify())
+        .pipe(res);
+    }
+  });
+}
 
 module.exports = app;
 

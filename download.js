@@ -58,20 +58,35 @@ workOutDateToRequest(function(err, from){
       // Stream handard data into database and regenerate keyword and 
       // member summary tables
       var checker = new Checker(url, from, to);
-      checker
-        .pipe(downloader)
-        .pipe(parser)
-        .pipe(metrics.streamCounter('Sections downloaded'))
-        .pipe(query.createStream('db/phrases_summaries.sql'))
-        .pipe(query.createStream('db/member_summaries.sql'))
-        .pipe(wordchoices.createIndexStream())
-        .pipe(cache.rebuildStream())
-        .pipe(cache.rebuildCacheStream())
-        .pipe(cache.rebuildMembersCache())
-        .pipe(query.createStream('db/vacuum.sql'))
-        .pipe(query.createStream('db/analyze.sql'))
-        .on('end', cb)
-        .on('error', function(err){ cb(err); });
+      if (process.env.ENABLE_WORDCHOICES){
+        checker
+          .pipe(downloader)
+          .pipe(parser)
+          .pipe(metrics.streamCounter('Sections downloaded'))
+          .pipe(query.createStream('db/phrases_summaries.sql'))
+          .pipe(query.createStream('db/member_summaries.sql'))
+          .pipe(cache.rebuildStream())
+          .pipe(cache.rebuildMembersCache())
+          .pipe(wordchoices.createIndexStream())
+          .pipe(cache.rebuildCacheStream())
+          .pipe(query.createStream('db/vacuum.sql'))
+          .pipe(query.createStream('db/analyze.sql'))
+          .on('end', cb)
+          .on('error', function(err){ cb(err); });
+      }else{
+        checker
+          .pipe(downloader)
+          .pipe(parser)
+          .pipe(metrics.streamCounter('Sections downloaded'))
+          .pipe(query.createStream('db/phrases_summaries.sql'))
+          .pipe(query.createStream('db/member_summaries.sql'))
+          .pipe(cache.rebuildStream())
+          .pipe(cache.rebuildMembersCache())
+          .pipe(query.createStream('db/vacuum.sql'))
+          .pipe(query.createStream('db/analyze.sql'))
+          .on('end', cb)
+          .on('error', function(err){ cb(err); });
+      }
     }
 
   ], function(err){
