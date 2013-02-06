@@ -1,8 +1,9 @@
+var async = require('async');
+var moment = require('moment');
 var metrics = require('./lib/metrics');
 var Checker = require('./lib/openau-checker');
 var downloader = require('./lib/xml-downloader');
 var Hansard = require('./lib/hansard');
-var async = require('async');
 var MembersStream = require('./lib/members').MembersStream;
 var membersLoader = require('./lib/members-loader');
 var verifyMemberImages = require('./lib/verify-member-images');
@@ -10,6 +11,7 @@ var query = require('./lib/query');
 var wordchoices = require('./lib/wordchoices');
 var cache = require('./lib/cache');
 require('date-utils');
+var start = new Date();
 
 var argv = require('optimist')
   .usage('Usage: $0 -u [url] -f [from] -t [to]')
@@ -58,6 +60,8 @@ workOutDateToRequest(function(err, from){
       // Stream handard data into database and regenerate keyword and 
       // member summary tables
       var checker = new Checker(url, from, to);
+      console.error("DOWNLOADER: start");
+      console.error("DOWNLOADER: ENABLE_WORDCHOICES=" + !!process.env.ENABLE_WORDCHOICES);
       if (process.env.ENABLE_WORDCHOICES){
         checker
           .pipe(downloader)
@@ -92,11 +96,14 @@ workOutDateToRequest(function(err, from){
   ], function(err){
     Hansard.end();
     metrics.end(function(){
+      var end = new Date();
+      var duration = moment.duration(end.getTime() - start.getTime()).humanize();
+      console.error("DOWNLOADER: end: " + duration);
       if (err){
-        console.error(err);
+        console.error("DOWNLOADER: " + err);
         process.exit(1);
       }else{
-        console.error('ok');
+        console.error('DOWNLOADER: OK');
         process.exit(0);
       }
     });
