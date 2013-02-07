@@ -1,6 +1,7 @@
 {
   "processes": [ "api.js" ],
   "env": {
+    "ENABLE_WORDCHOICES": "true",
     "DATABASE_URL": "postgres://udq2roo96tlevr:pcoful05rd9tdo55p5j89lap1kd@ec2-107-21-126-162.compute-1.amazonaws.com:5942/d6s91lou6okqbo",
     "NODETIME_KEY": "1be0980981686c275b5a4c91ab8966df55d1d68d",
     "NODE_ENV": "production",
