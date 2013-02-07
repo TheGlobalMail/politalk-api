@@ -66,7 +66,6 @@ workOutDateToRequest(function(err, from){
         checker
           .pipe(downloader)
           .pipe(parser)
-          .pipe(metrics.streamCounter('Sections downloaded'))
           .pipe(query.createStream('db/phrases_summaries.sql'))
           .pipe(query.createStream('db/member_summaries.sql'))
           .pipe(cache.rebuildStream())
@@ -81,7 +80,6 @@ workOutDateToRequest(function(err, from){
         checker
           .pipe(downloader)
           .pipe(parser)
-          .pipe(metrics.streamCounter('Sections downloaded'))
           .pipe(query.createStream('db/phrases_summaries.sql'))
           .pipe(query.createStream('db/member_summaries.sql'))
           .pipe(cache.rebuildStream())
