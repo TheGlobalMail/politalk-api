@@ -34,6 +34,8 @@ describe("/api/wordchoices/term/:term", function(){
         assert.equal(json.data[0].party, 'Liberal Party');
         assert(json.data[0].week.toString().match('2012-41'));
         assert(json.data[0].ids, 'test');
+        assert.equal(json.exact, false);
+        assert.equal(json.tokens, 'api');
         assert.equal(json.data[0].freq, 1);
         done();
       });
@@ -54,6 +56,8 @@ describe("/api/wordchoices/term/:term", function(){
         assert.equal(data[0].party, 'Liberal Party');
         assert(data[0].week.toString().match('2012-41'));
         assert(data[0].ids, 'test1');
+        assert.equal(json.exact, true);
+        assert.equal(json.tokens, 'apis');
         assert.equal(data[0].freq, 1);
         done();
       });
