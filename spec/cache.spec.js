@@ -35,6 +35,7 @@ describe("cache.rebuildWordchoicesCache", function(){
       db.query(query, ['api', false], function(err, result){
         var reCalculatedCache = result.rows[0];
         assert.equal(1, reCalculatedCache.resultcount);
+        assert.equal(1, JSON.parse(reCalculatedCache.data).data.length);
         db.end();
         done();
       });
