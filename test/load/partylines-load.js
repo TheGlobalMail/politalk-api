@@ -74,7 +74,7 @@ writes = {
   name: "/api/wordchoices/term load test",
   host: server,
   port: 80,
-  numUsers: 4,
+  numUsers: 12,
   timeLimit: (60 * 2),
   targetRps: 2,
   reportInterval: 2,
