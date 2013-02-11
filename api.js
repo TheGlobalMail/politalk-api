@@ -129,9 +129,10 @@ if (process.env.ENABLE_WORDCHOICES || process.env.NODE_ENV === 'test'){
   app.get('/api/wordchoices/year/term/:term', function(req, res, next){
     var term = req.params.term && req.params.term.toLowerCase();
     var exactMatch = req.query.c;
+    var party = req.query.party;
     if (!term) return res.json([]);
 
-    wordchoices.forTermByYear(term, exactMatch, function(err, results){
+    wordchoices.forTermByYear(term, exactMatch, party, function(err, results){
       if (err) return next(err);
       jsonp.send(req, res, results);
     });
