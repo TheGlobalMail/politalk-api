@@ -125,6 +125,17 @@ if (process.env.ENABLE_WORDCHOICES || process.env.NODE_ENV === 'test'){
         .pipe(res);
     }
   });
+
+  app.get('/api/wordchoices/year/term/:term', function(req, res, next){
+    var term = req.params.term && req.params.term.toLowerCase();
+    var exactMatch = req.query.c;
+    if (!term) return res.json([]);
+
+    wordchoices.forTermByYear(term, exactMatch, function(err, results){
+      if (err) return next(err);
+      jsonp.send(req, res, results);
+    });
+  });
 }
 
 module.exports = app;
