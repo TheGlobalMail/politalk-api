@@ -17,7 +17,7 @@ describe('Hansard.Parser', function(){
         if (err) throw err;
         helpers.loadMemberFixture(function(err){
           if (err) throw err;
-          var parser = new Hansard.Parser();
+          var parser = new Hansard.Parser({metadata: true});
           parser.on('end', done);
           parser.on('error', done);
           parser.write({date: date, xml: xml});

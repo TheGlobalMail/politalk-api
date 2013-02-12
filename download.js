@@ -42,7 +42,7 @@ workOutDateToRequest(function(err, from){
 
   var url = argv.url || 'http://data.openaustralia.org/scrapedxml';
   var to = argv.to && new Date(argv.to);
-  var parser = new Hansard.Parser({ metadata: true });
+  var parser = new Hansard.Parser();
   var apikey = argv.key || process.env.OPENAU_KEY;
 
   async.series([
