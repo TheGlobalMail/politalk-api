@@ -92,6 +92,14 @@ describe('Hansard.Parser', function(){
       });
     });
 
+    it("should use the talktype if it's set to interjection", function(done){
+      Hansard.byId('house-2006-02-07.11.6', function(err, speech){
+        assert(speech, "No matching speech found");
+        assert.equal(speech.talktype, 'interjection');
+        done();
+      });
+    });
+
 
     afterEach(function(){
       helpers.cleanup();
