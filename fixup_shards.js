@@ -5,7 +5,7 @@ var async = require('async');
 async.forEachSeries(shards, function(originalLetter, done){
   async.forEachSeries(shards, function(targetletter, done){
     var shard = originalLetter + targetletter;
-    //var query = 'delete from wordchoice_tokens_cluster_' + shard + " where date > '2013-01-01'";
+    var query = 'create index hansard_id_' + shard + ' on wordchoice_tokens_cluster_' + shard + ' using btree(hansard_id)';
     db.query(query, done);
   }, done);
 }, function(err){
