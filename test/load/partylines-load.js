@@ -3,7 +3,7 @@ var sys = require('sys');
 var nl = require('nodeload');
 var _ = require('lodash');
 var request = require('request');
-var server = 'partylines-api.theglobalmail.org';
+var server = 'staging-partylines-api.theglobalmail.org';
 //var server = 'localhost:8080';
 var writes;
 var util = require('util');
@@ -30,7 +30,15 @@ var words = [
   'illegals',
   'piss off',
   'mining',
-  'murray darling basin'
+  'murray darling basin',
+  'trade agreement',
+  'foreign affairs',
+  'indonesia',
+  'party politics',
+  'the',
+  'transit police',
+  'federal funding',
+  'new south wales'
 ];
 
 var hansardIds = ['senate-2010-05-11.95.1', 'senate-2010-05-11.96.2', 'senate-2010-05-12.151.1', 'senate-2010-05-12.151.18', 'senate-2010-05-12.152.1', 'senate-2010-05-12.105.3', 'senate-2010-05-12.109.3', 'senate-2010-05-12.111.1', 'senate-2010-05-12.154.1', 'senate-2010-05-13.86.1', 'house-2010-05-11.22.18', 'house-2010-05-11.22.3', 'house-2010-05-11.22.31', 'house-2010-05-11.22.40', 'senate-2010-05-11.22.9', 'senate-2010-05-11.65.1', 'house-2010-05-12.31.1', 'senate-2010-05-12.106.1', 'senate-2010-05-13.139.21', 'senate-2010-05-13.90.1', 'house-2010-05-11.22.42', 'senate-2010-05-12.51.1', 'senate-2010-05-12.52.1', 'senate-2010-05-12.53.1', 'senate-2010-05-12.53.20', 'senate-2010-05-12.54.25', 'senate-2010-05-12.54.37', 'senate-2010-05-12.54.9', 'senate-2010-05-13.87.1', 'senate-2010-05-13.88.1', 'house-2010-05-12.95.1', 'senate-2010-05-12.150.1', 'senate-2010-05-13.160.9', 'senate-2010-05-12.53.19', 'senate-2010-05-13.89.1', 'house-2010-05-12.176.1', 'house-2010-05-13.19.1', 'house-2010-05-11.22.2', 'senate-2010-05-12.153.1', 'senate-2010-05-12.54.1', 'house-2010-05-13.43.1', 'senate-2010-05-13.164.1', 'senate-2010-05-12.55.15', 'senate-2010-05-12.55.17', 'senate-2010-05-12.55.5', 'senate-2010-05-12.62.1', 
@@ -74,7 +82,7 @@ writes = {
   name: "/api/wordchoices/term load test",
   host: server,
   port: 80,
-  numUsers: 12,
+  numUsers: 500,
   timeLimit: (60 * 2),
   targetRps: 2,
   reportInterval: 2,
