@@ -23,3 +23,4 @@ At 10am every day, `download.js` is run to check for new hansard data.
 ## TODO before launch
 
 * workout timeout
+* talk to heroku
