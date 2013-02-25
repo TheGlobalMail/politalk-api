@@ -1,3 +1,5 @@
+tetest
+
 # Politalk API
 
 Provides the following endpoints:
@@ -24,3 +26,5 @@ At 10am every day, `download.js` is run to check for new hansard data.
 
 * workout timeout
 * talk to heroku
+* loadbalance/fallover on fastly
+* remove insert
