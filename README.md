@@ -1,5 +1,3 @@
-tetest
-
 # Politalk API
 
 Provides the following endpoints:
