@@ -98,15 +98,7 @@ describe("/api/wordchoices/term/:term", function(){
           var data = json.data;
           assert.equal(data.length, 1);
           assert.equal('1', res.headers['x-cached-wordchoice']);
-          var sql = 'select * from wordchoices_cache where term = $1 and exactMatch = $2';
-          setTimeout(function(){
-            db.query(sql, ['politalk api', true], function(err, result){
-              assert(!err);
-              var cache = result.rows[0];
-              assert.equal(2, cache.requested);
-              done();
-            });
-          }, 400);
+          done();
         });
       });
     });
