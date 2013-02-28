@@ -91,8 +91,10 @@ if (process.env.ENABLE_WORDCHOICES || process.env.NODE_ENV === 'test'){
 
     wordchoices.forTerm(term, exactMatch, function(err, results){
       if (err) return next(err);
-      jsonp.send(req, res, results);
-      cache.cacheWordchoices(term, exactMatch, results, function(){});
+      cache.cacheWordchoices(term, exactMatch, results, function(err){
+        if (err) return next(err);
+        jsonp.send(req, res, results);
+      });
     });
   });
 
