@@ -3,7 +3,8 @@ var sys = require('sys');
 var nl = require('nodeload');
 var _ = require('lodash');
 var request = require('request');
-var server = 'staging-partylines-api.theglobalmail.org';
+var server = '54.234.186.44';
+//var server = 'staging-partylines-api.theglobalmail.org';
 //var server = 'localhost:8080';
 var writes;
 var util = require('util');
@@ -82,7 +83,7 @@ writes = {
   name: "/api/wordchoices/term load test",
   host: server,
   port: 80,
-  numUsers: 500,
+  numUsers: 10,
   timeLimit: (60 * 2),
   targetRps: 2,
   reportInterval: 2,
