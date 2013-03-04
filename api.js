@@ -101,31 +101,33 @@ if (process.env.ENABLE_WORDCHOICES || process.env.NODE_ENV === 'test'){
   app.all('/api/hansards', function(req, res, next){
     var ids = req.param('ids');
     if (!ids) return next('No ids supplied');
-    var stream = hansard.createStream(ids);
-    if (req.query.callback){
-      res.set('content-type', 'application/javascript');
-      res.write(req.query.callback + '([');
-      var first = true;
-      stream.on('data', function(record){
-        var json = JSON.stringify(record);
-        if (!first){
-          json = ", " + json;
-        }
-        first = false;
-        res.write(json);
-      });
-      stream.on('end', function(){
-        res.write(']);');
-        res.end(); 
-      });
-      stream.on('error', function(err){
-        next(err);
-      });
-    }else{
-      stream 
-        .pipe(JSONStream.stringify())
-        .pipe(res);
-    }
+    hansard.createStream(ids, function(err, stream){
+      if (err) return next(err);
+      if (req.query.callback){
+        res.set('content-type', 'application/javascript');
+        res.write(req.query.callback + '([');
+        var first = true;
+        stream.on('data', function(record){
+          var json = JSON.stringify(record);
+          if (!first){
+            json = ", " + json;
+          }
+          first = false;
+          res.write(json);
+        });
+        stream.on('end', function(){
+          res.write(']);');
+          res.end(); 
+        });
+        stream.on('error', function(err){
+          next(err);
+        });
+      }else{
+        stream 
+          .pipe(JSONStream.stringify())
+          .pipe(res);
+      }
+    });
   });
 
   app.get('/api/wordchoices/year/term/:term', function(req, res, next){
@@ -137,6 +139,15 @@ if (process.env.ENABLE_WORDCHOICES || process.env.NODE_ENV === 'test'){
     wordchoices.forTermByYear(term, exactMatch, party, function(err, results){
       if (err) return next(err);
       jsonp.send(req, res, results);
+    });
+  });
+
+}
+
+if (process.env.TEST_KILL){
+  app.get('/sleep', function(req, res, next){
+    db.query('select pg_sleep(50)', function(err){
+      jsonp.send(req,res, {});
     });
   });
 }
