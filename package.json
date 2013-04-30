@@ -10,7 +10,7 @@
     "underscore.string": "~2.3.0",
     "express": "~3.0.0",
     "cheerio": "~0.10.1",
-    "pg": "git://github.com/brianc/node-postgres.git",
+    "pg": "git://github.com/brianc/node-postgres.git#0d0737d67b0146e2a057761d32ab3175da967335",
     "colors": "~0.6.0-1",
     "optimist": "~0.3.5",
     "date-utils": "~1.2.12",
