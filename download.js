@@ -5,6 +5,7 @@ var Checker = require('./lib/openau-checker');
 var downloader = require('./lib/xml-downloader');
 var Hansard = require('./lib/hansard');
 var MembersStream = require('./lib/members').MembersStream;
+var Members = require('./lib/members');
 var membersLoader = require('./lib/members-loader');
 var verifyMemberImages = require('./lib/verify-member-images');
 var query = require('./lib/query');
@@ -51,9 +52,19 @@ workOutDateToRequest(function(err, from){
       // Stream member data into database
       var members = new MembersStream({ apikey: apikey });
       members
-        .pipe(verifyMemberImages)
         .pipe(membersLoader)
         .on('end', cb);
+    },
+
+    function(cb){
+      // Verify all member images
+      Members.createStream(function(err, members){
+        if (err) return cb(err);
+        members
+          .pipe(verifyMemberImages)
+          .pipe(membersLoader)
+          .on('end', cb);
+      });
     },
 
     function(cb){
