@@ -4,8 +4,8 @@ var metrics = require('./lib/metrics');
 var Checker = require('./lib/openau-checker');
 var downloader = require('./lib/xml-downloader');
 var Hansard = require('./lib/hansard');
-var MembersStream = require('./lib/members').MembersStream;
 var Members = require('./lib/members');
+var MembersStream = Members.MembersStream;
 var membersLoader = require('./lib/members-loader');
 var verifyMemberImages = require('./lib/verify-member-images');
 var query = require('./lib/query');
@@ -31,6 +31,7 @@ function workOutDateToRequest(cb){
     cb(null, new Date(argv.from));
   }else{
     Hansard.lastSpeechDate(function(err, date){
+      if (err) return cb(err);
       if (!date) cb('No recent date in database. Run with -d instead');
       date.addDays(1);
       cb(null, date);
