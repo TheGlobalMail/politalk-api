@@ -57,6 +57,7 @@ workOutDateToRequest(function(err, from){
         .on('end', cb);
     },
 
+    /*
     function(cb){
       // Verify all member images
       Members.createStream(function(err, members){
@@ -67,6 +68,7 @@ workOutDateToRequest(function(err, from){
           .on('end', cb);
       });
     },
+    */
 
     function(cb){
       // Stream handard data into database and regenerate keyword and 
