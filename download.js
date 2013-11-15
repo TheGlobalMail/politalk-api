@@ -49,6 +49,10 @@ workOutDateToRequest(function(err, from){
 
   async.series([
 
+    /*
+     * TODO: 
+     * 1) fix it so that the member loader does not overwrite image field
+     * 2) that images are only requested if not requested before?
     function(cb){
       // Stream member data into database
       var members = new MembersStream({ apikey: apikey });
@@ -67,6 +71,7 @@ workOutDateToRequest(function(err, from){
           .on('end', cb);
       });
     },
+    */
 
     function(cb){
       // Stream handard data into database and regenerate keyword and 
