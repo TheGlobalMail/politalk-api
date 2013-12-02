@@ -4,6 +4,7 @@ var metrics = require('./lib/metrics');
 var Checker = require('./lib/openau-checker');
 var downloader = require('./lib/xml-downloader');
 var Hansard = require('./lib/hansard');
+var keywords = require('./lib/keywords');
 var Members = require('./lib/members');
 var MembersStream = Members.MembersStream;
 var membersLoader = require('./lib/members-loader');
@@ -84,9 +85,11 @@ workOutDateToRequest(function(err, from){
           .pipe(downloader)
           .pipe(parser)
           .pipe(query.createStream('db/phrases_summaries.sql'))
+          .pipe(query.createStream('db/phrases_lists.sql'))
           .pipe(query.createStream('db/member_summaries.sql'))
           .pipe(cache.rebuildStream())
           .pipe(cache.rebuildMembersCache())
+          .pipe(keywords.generateListStream())
           .pipe(wordchoices.createIndexStream())
           .pipe(cache.rebuildCacheStream())
           .pipe(query.createStream('db/vacuum.sql'))
