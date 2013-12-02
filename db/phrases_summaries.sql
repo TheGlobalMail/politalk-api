@@ -4,72 +4,54 @@ DROP TABLE IF EXISTS phrases_summaries;
 CREATE TABLE phrases_summaries (
   text varchar(200) NOT NULL,
   stem varchar(200),
-  date date NOT NULL,
+  year integer NOT NULL,
   frequency integer DEFAULT 0,
   words integer DEFAULT 0
 );
 
-insert into phrases_summaries(text, stem, date, frequency, words) select text, stem, phrases.date, sum(frequency) as frequency, count(words) as words from 
-phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, text, stem having sum(frequency) > 10;
+insert into phrases_summaries(text, stem, year, frequency, words) select text, stem, extract(year from phrases.date), sum(frequency) as frequency, count(words) as words from 
+phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, text, stem;
 
 create index ps_text_idx on phrases_summaries (text);
 create index ps_stem_idx on phrases_summaries (stem);
-create index ps_date_idx on phrases_summaries (date);
+create index ps_year_idx on phrases_summaries (year);
 
-DROP TABLE IF EXISTS phrases_houses_summaries;
-CREATE TABLE phrases_houses_summaries (
+DROP TABLE IF EXISTS phrases_party_summaries;
+CREATE TABLE phrases_party_summaries (
   text varchar(200) NOT NULL,
   stem varchar(200),
-  date date NOT NULL,
-  house integer DEFAULT NULL,
+  year integer NOT NULL,
   party varchar(100) DEFAULT NULL,
   frequency integer DEFAULT 0,
   words integer DEFAULT 0
 );
 
-insert into phrases_houses_summaries(text, stem, date, house, party, frequency, words) select text, stem, phrases.date, house, member.party, sum(frequency) as frequency, count(words) as words from 
-phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, house, member.party, text, stem having sum(frequency) > 2;
+insert into phrases_party_summaries(text, stem, year, party, frequency, words) select text, stem, extract(year from phrases.date), member.party, sum(frequency) as frequency, count(words) as words from 
+phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, member.party, text, stem ;
 
-create index phs_text_idx on phrases_houses_summaries (text);
-create index phs_stem_idx on phrases_houses_summaries (stem);
-create index phs_house on phrases_houses_summaries (house);
-create index phs_party on phrases_houses_summaries (party);
-create index phs_date_idx on phrases_houses_summaries (date);
+create index ppts_text_idx on phrases_party_summaries (text);
+create index ppts_stem_idx on phrases_party_summaries (stem);
+create index ppts_party on phrases_party_summaries (party);
+create index ppts_year_idx on phrases_party_summaries (year);
 
 DROP TABLE IF EXISTS phrases_speaker_ids_summaries;
 CREATE TABLE phrases_speaker_ids_summaries (
   text varchar(200) NOT NULL,
   stem varchar(200),
-  date date NOT NULL,
+  year integer NOT NULL,
   speaker_id integer DEFAULT NULL,
   frequency integer DEFAULT 0,
   words integer DEFAULT 0
 );
 
-insert into phrases_speaker_ids_summaries(text, stem, date, speaker_id, frequency, words) select text, stem, phrases.date, speaker_id, sum(frequency) as frequency, count(words) as words from 
-phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, speaker_id, text, stem having sum(frequency) > 2;
+insert into phrases_speaker_ids_summaries(text, stem, year, speaker_id, frequency, words) select text, stem, extract(year from phrases.date), speaker_id, sum(frequency) as frequency, count(words) as words from 
+phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, speaker_id, text, stem ;
 
 create index pss_text_idx on phrases_speaker_ids_summaries (text);
 create index pss_stem_idx on phrases_speaker_ids_summaries (stem);
 create index pss_speaker_id on phrases_speaker_ids_summaries (speaker_id);
-create index pss_date_idx on phrases_speaker_ids_summaries (date);
+create index pss_year_idx on phrases_speaker_ids_summaries (year);
 
 DROP TABLE IF EXISTS phrases_person_ids_summaries;
-CREATE TABLE phrases_person_ids_summaries (
-  text varchar(200) NOT NULL,
-  stem varchar(200),
-  date date NOT NULL,
-  person_id integer DEFAULT NULL,
-  frequency integer DEFAULT 0,
-  words integer DEFAULT 0
-);
-
-insert into phrases_person_ids_summaries(text, stem, date, person_id, frequency, words) select text, stem, phrases.date, member.person_id, sum(frequency) as frequency, count(words) as words from 
-phrases inner join hansards on hansards.id = phrases.hansard_id inner join member on member.member_id = hansards.speaker_id group by phrases.date, member.person_id, text, stem having sum(frequency) > 2;
-
-create index pps_text_idx on phrases_person_ids_summaries (text);
-create index pps_stem_idx on phrases_person_ids_summaries (stem);
-create index pps_person_id on phrases_person_ids_summaries (person_id);
-create index pps_date_idx on phrases_person_ids_summaries (date);
 
 commit;

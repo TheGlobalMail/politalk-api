@@ -19,24 +19,24 @@ CREATE TABLE member_summaries (
   speeches integer DEFAULT 0,
   words integer DEFAULT 0,
   total integer DEFAULT 0,
-  date date NOT null
+  year integer NOT null
 );
 
 insert into member_summaries(duration, speaker, first_name, last_name, speaker_id, 
   person_id, party, interjections, speeches, house, words, total, image, 
-  entered_house, left_house, left_reason, date, constituency)
+  entered_house, left_house, left_reason, year, constituency)
 select sum(duration) as duration, speaker, first_name, 
 last_name, speaker_id, person_id, member.party, 
 sum(case when (talktype='interjection') then 1 else 0 end) as interjections,
 sum(case when (talktype='speech') then 1 else 0 end) as speeches,
 house, sum(words) as words, count(*) as total, image,
-entered_house, left_house, left_reason, date, constituency
+entered_house, left_house, left_reason, extract(year from date) as year, constituency
 from hansards
 inner join member on member.member_id = speaker_id
-group by speaker_id,speaker,person_id,member.party,house,first_name,last_name,image,entered_house,left_house,left_reason,date,constituency;
+group by speaker_id,speaker,person_id,member.party,house,first_name,last_name,image,entered_house,left_house,left_reason,extract(year from date),constituency;
 
 create index ms_speaker_id on member_summaries(speaker_id, speaker, person_id, party, house, first_name, last_name, image, entered_house, left_house, left_reason, constituency);
 create index ms_durationx on member_summaries(duration);
-create index ms_datex on member_summaries(date);
+create index ms_yearx on member_summaries(year);
 
 commit;
