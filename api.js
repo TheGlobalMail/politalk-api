@@ -89,7 +89,7 @@ if (process.env.ENABLE_WORDCHOICES || process.env.NODE_ENV === 'test'){
     var exactMatch = req.query.c;
     if (!term) return res.json([]);
 
-    wordchoices.forTerm(term, exactMatch, function(err, results){
+    wordchoices.forTerm(term, {exactMatch: exactMatch}, function(err, results){
       if (err) return next(err);
       cache.cacheWordchoices(term, exactMatch, results, function(err){
         if (err) return next(err);
