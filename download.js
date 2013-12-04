@@ -85,7 +85,6 @@ workOutDateToRequest(function(err, from){
           .pipe(downloader)
           .pipe(parser)
           .pipe(query.createStream('db/phrases_summaries.sql'))
-          .pipe(query.createStream('db/phrases_list.sql'))
           .pipe(query.createStream('db/member_summaries.sql'))
           .pipe(cache.rebuildMembersCache())
           .pipe(wordchoices.createIndexStream())
