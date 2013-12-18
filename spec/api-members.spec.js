@@ -35,11 +35,9 @@ describe("/api/members", function(){
   });
 
   it("should cache to /api/members/year for each year", function(done){
-    request(helpers.url + '/api/members/year?from=2012-01-01', function(err, res, body){
+    helpers.testApi(helpers.url + '/api/members/year?from=2012-01-01', function(err, json){
       var json;
       assert(!err);
-      assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
-      json = JSON.parse(body);
       assert.equal(json[0].speaker, 'John Howard');
       assert.equal(json[0].url, 'http://www.openaustralia.org/mp/john_howard/bennelong');
       done();

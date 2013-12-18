@@ -19,7 +19,7 @@ describe("wordchoices.createIndexStream", function(){
       helpers.loadMemberFixture,
       helpers.loadHansardFixtures,
       function(done){
-        db.query('select * from hansards where id = $1', ['test'], function(err, result){
+        db.query('select * from hansards where id = $1', [helpers.hansardFixtureID], function(err, result){
           if (err) return done(err);
           hansardRecord = result.rows[0];
           done();

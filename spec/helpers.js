@@ -52,6 +52,7 @@ exports.calculateMemberSummaries = function(cb){
   db.query(query, cb);
 };
 
+exports.hansardFixtureID = 'house-2012-10-10.100.1';
 exports.loadHansardFixtures = function(cb){
   var html = '';
   var i = 0;
@@ -61,7 +62,7 @@ exports.loadHansardFixtures = function(cb){
     i++;
   }
   speech = {
-    id: 'test', date: new Date('2012-10-10'), 
+    id: exports.hansardFixtureID, date: new Date('2012-10-10'), 
     html: html, headingId: 1, subHeadingId: 1, 
     duration: 600,
     speaker_id: 265, speaker: 'John Howard', timeOfDay: '11:00'
@@ -113,7 +114,7 @@ exports.testApi = function(url, cb){
     assert(!err);
     assert(res.statusCode !== '200', "Got status code of " + res.statusCode);
     json = JSON.parse(body);
-    assert(_.isArray(json));
+    assert(_.isArray(json), 'JSON is not array');
     cb(err, json);
   });
 };

@@ -156,7 +156,7 @@ CREATE TABLE member_summaries (
     speeches integer DEFAULT 0,
     words integer DEFAULT 0,
     total integer DEFAULT 0,
-    date date NOT NULL
+  year integer NOT null
 );
 
 
@@ -377,7 +377,7 @@ CREATE INDEX house_idx ON member USING btree (house);
 -- Name: ms_datex; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX ms_datex ON member_summaries USING btree (date);
+CREATE INDEX ms_yearx ON member_summaries USING btree (year);
 
 
 --
@@ -903,3 +903,37 @@ CREATE TABLE members_by_year_cache (
 );
 
 CREATE INDEX members_cache_year_idx ON members_by_year_cache USING btree (year);
+
+DROP TABLE IF EXISTS phrases_list;
+CREATE TABLE phrases_list (
+  year varchar(9),
+  lastupdate timestamp without time zone DEFAULT now() NOT NULL,
+  data text NOT NULL
+);
+
+create unique index pl_year_idx on phrases_list (year);
+
+
+DROP TABLE IF EXISTS phrases_party_list;
+CREATE TABLE phrases_party_list (
+  year varchar(9),
+  party varchar(100) DEFAULT NULL,
+  lastupdate timestamp without time zone DEFAULT now() NOT NULL,
+  data text NOT NULL
+);
+
+create index phl_party on phrases_party_list (party);
+create index phl_year_idx on phrases_party_list (year);
+create unique index phl_party_year_idx on phrases_party_list (party, year);
+
+DROP TABLE IF EXISTS phrases_speaker_ids_list;
+CREATE TABLE phrases_speaker_ids_list (
+  year varchar(9),
+  speaker_id integer DEFAULT NULL,
+  lastupdate timestamp without time zone DEFAULT now() NOT NULL,
+  data text NOT NULL
+);
+
+create index psl_speaker_id on phrases_speaker_ids_list (speaker_id);
+create index psl_year_idx on phrases_speaker_ids_list (year);
+create unique index psl_speaker_id_year_idx on phrases_speaker_ids_list (speaker_id, year);

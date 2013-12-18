@@ -25,27 +25,6 @@ describe('Hansard.Parser', function(){
 
   });
 
-  describe(".lastSpeechDate", function(){
-
-    var lastDate = new Date('2020-11-3');
-
-    beforeEach(function(done){
-      var speech = {
-        id: 'test', date: lastDate, 
-        html: '', headingId: 1, subHeadingId: 1, 
-        speaker_id: 1, speaker: 'test', timeOfDay: '11:00'
-      };
-      Hansard.addSpeech(speech, done);
-    });
-
-    it("should return the data of the last speech stored", function(done){
-      Hansard.lastSpeechDate(function(err, date){
-        assert(date.toString(), lastDate.toString());
-        done();
-      });
-    });
-  });
-
   describe(".parse called with xml data for a debate", function(){
 
     // XXX hardcoded test count. Increment this if you add a test! hack to simulate afterAll

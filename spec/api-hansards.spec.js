@@ -22,7 +22,7 @@ describe("/api/hansards", function(){
   describe("called ids query parameter", function(){
 
     it("should return a list of hanards as json", function(done){
-      request(helpers.url + '/api/hansards?ids=test', function(err, res, body){
+      request(helpers.url + '/api/hansards?ids=' + helpers.hansardFixtureID, function(err, res, body){
         var json;
         assert(!err);
         assert(res.statusCode !== '200', "Got status code of " + res.statusCode);

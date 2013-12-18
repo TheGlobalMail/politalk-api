@@ -51,7 +51,7 @@ app.get('/api/members/year', function(req, res, next){
   if (!year) res.json([]);
   members.findByYear(year, function(err, members){
     if (err) return next(err);
-    res.json(members);
+    jsonp.send(req, res, members);
   });
 });
 
