@@ -31,7 +31,7 @@ var argv = require('optimist')
   .argv;
 
 var url = argv.url || 'http://data.openaustralia.org/scrapedxml';
-var from = argv.from && (new Date(argv.to) + 1);
+var from = argv.from && new Date(argv.from);
 var to = argv.to && new Date(argv.to);
 var parser = new Hansard.Parser({ metadata: true });
 var apikey = argv.key || process.env.OPENAU_KEY;
