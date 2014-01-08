@@ -23,7 +23,7 @@ describe('Hansard.filterDownloadedStream', function(){
       stream.on('data', function(datum){
         data.push(datum);
       });
-      stream.on('close', function(){
+      stream.on('end', function(){
         assert(1, data.length);
         assert('senate', data[0].house);
         done();
